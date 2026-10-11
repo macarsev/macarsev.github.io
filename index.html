@@ -185,9 +185,28 @@ table.beat td{text-align:center}
 .lyrics-btn{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;min-height:64px;padding:0 28px;border-radius:16px;background:var(--amber);color:var(--ink);font-family:var(--display);font-weight:800;font-size:24px}
 .lyrics-btn:hover{background:#FFC95A}
 .sheet .player.compact{position:sticky;top:68px;z-index:3;box-shadow:0 10px 24px rgba(10,12,30,.6)}
-.player.compact .pl-big{font-size:clamp(48px,9vw,84px)}
-.player.compact .pl-num{font-size:clamp(44px,8vw,72px)}
+.player.compact{padding:10px 14px;gap:8px}
+.player.compact .pl-stage{grid-template-columns:auto minmax(0,1fr) auto;gap:6px 14px}
+.player.compact .pl-now{min-width:84px}
+.player.compact .pl-sec{font-size:11px;min-height:1.2em}
+.player.compact .pl-big{font-size:48px}
+.player.compact .pl-big.words{font-size:22px}
 .player.compact .pl-sub{display:none}
+.player.compact .strip{grid-column:auto;order:1;height:60px}
+.player.compact .strip-track,.player.compact .strip-head{top:7px;bottom:4px}
+.player.compact .cell .lab{font-size:22px}
+.player.compact .cell .lab.w{font-size:14px}
+.player.compact .pl-count{order:2;gap:6px}
+.player.compact .pl-num{font-size:40px}
+.player.compact .pl-dots{grid-template-columns:repeat(4,10px);gap:5px}
+.player.compact .pl-dot{width:10px;height:10px}
+.player.compact .pl-controls{gap:8px}
+.player.compact .bpm button{width:40px;height:40px;font-size:22px}
+.player.compact .bpm output{font-size:22px}
+.player.compact .pl-btn{min-height:44px;font-size:15px;padding:0 14px}
+.player.compact .pl-btn.primary{min-width:120px;font-size:16px}
+.player.compact .pl-msg{font-size:13px;min-height:0}
+@media (max-width:700px){.player.compact .pl-stage{grid-template-columns:auto 1fr}.player.compact .strip{grid-column:1/-1}}
 .lyr{display:flex;flex-direction:column;gap:14px}
 .lyr-sec{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .lyr-sec.now{border-color:var(--amber)}
@@ -443,7 +462,7 @@ function isChordLine(line){
   return ps.every(Boolean) && ps.some(x=>x.c);
 }
 function parseSheet(text,defBeats){
-  const lines=text.replace(/\r/g,'').split('\n'), out=[]; let sec=null;
+  const lines=text.replace(/\r/g,'').replace(/\t/g,'    ').split('\n'), out=[]; let sec=null;
   const open=name=>{ sec={name,lines:[]}; out.push(sec); };
   for(let i=0;i<lines.length;i++){
     const L=lines[i], t=L.trim();
@@ -455,7 +474,7 @@ function parseSheet(text,defBeats){
       while((m=re.exec(L))){ const q=parseTok(m[0]); if(q.c) chords.push({c:q.c,beats:q.beats||0,col:m.index}); else if(chords.length) chords[chords.length-1].beats=q.dur; }
       let lyric=''; const nx=lines[i+1];
       if(nx!==undefined && nx.trim() && !nx.trim().startsWith('#') && !isChordLine(nx) && !/^\[.+\]$/.test(nx.trim())){ lyric=nx; i++; }
-      if(!sec) open('Giriş');
+      if(!sec) open('');
       sec.lines.push({chords,lyric}); continue;
     }
     if(!sec) open('');
@@ -815,7 +834,7 @@ function stripLabel(it,kind,prev){
   if(kind==='vokal'||NOTE_ONLY.has(kind)) return (!prev||prev.si!==it.si) ? it.sec : '';
   return it.c;
 }
-function sizeStrip(){ const st=$('strip'); if(!st) return; P.cw=Math.max(40,Math.floor(st.clientWidth/STRIP_CELLS)); st.style.setProperty('--cw',P.cw+'px'); }
+function sizeStrip(){ const st=$('strip'); if(!st) return; const cmp=$('player')&&$('player').classList.contains('compact'); P.cw=Math.max(cmp?34:40,Math.floor(st.clientWidth/(cmp?16:STRIP_CELLS))); st.style.setProperty('--cw',P.cw+'px'); }
 function placeStrip(x){ const tr=$('strip-track'); if(tr) tr.style.transform=`translate3d(${(-(Math.max(0,x)-LEAD)*P.cw).toFixed(1)}px,0,0)`; }
 function buildStrip(){
   const tr=$('strip-track'); if(!tr) return;
@@ -842,15 +861,24 @@ function setDots(total,left){
   if(box.childElementCount!==total) box.innerHTML='<span class="pl-dot"></span>'.repeat(total);
   [...box.children].forEach((d,k)=>d.classList.toggle('on',k<left));
 }
+/* Çalınan satırı çalıcının hemen altına getirir; bir önceki satır da görünür kalır. */
+function followLine(line){
+  const sc=document.querySelector('.sheet'), pl=$('player'); if(!sc||!pl) return;
+  const base=sc.getBoundingClientRect().top;
+  const lineTop=line.getBoundingClientRect().top-base+sc.scrollTop;
+  const prev=line.previousElementSibling, gap=prev ? prev.getBoundingClientRect().height+16 : 40;
+  const under=pl.getBoundingClientRect().bottom-base;
+  sc.scrollTo({top:Math.max(0,lineTop-under-gap),behavior:RM?'auto':'smooth'});
+}
 function markNow(it){
   document.querySelectorAll('.chip.now,.form-row.now,.lyr-sec.now,.lyr-line.now').forEach(e=>e.classList.remove('now'));
   if(!it){ P.lastLine=null; return; }
   const row=document.querySelector(`.form-row[data-si="${it.si}"],.lyr-sec[data-si="${it.si}"]`); row&&row.classList.add('now');
   const line=document.querySelector(`.lyr-line[data-line="${it.si}-${it.ri}"]`);
-  if(line){ line.classList.add('now'); if(P.lastLine!==line){ P.lastLine=line; line.scrollIntoView({block:'center',behavior:RM?'auto':'smooth'}); } }
+  if(line){ line.classList.add('now'); if(P.lastLine!==line){ P.lastLine=line; followLine(line); } }
   const chip=document.querySelector(`.chip[data-pos="${it.si}-${it.ri}-${it.ci}"]`); chip&&chip.classList.add('now');
 }
-function idleMsg(){ return `Tempo ${P.bpm} BPM. Tek başına çalışmak için Başlat'a bas. Sınıfça çalarken öğretmen “şimdi” deyince herkes Birlikte başla'ya bassın.`; }
+function idleMsg(){ if($('player')&&$('player').classList.contains('compact')) return `Tempo ${P.bpm} BPM`; return `Tempo ${P.bpm} BPM. Tek başına çalışmak için Başlat'a bas. Sınıfça çalarken öğretmen “şimdi” deyince herkes Birlikte başla'ya bassın.`; }
 function resetDisplay(){
   buildStrip();
   const first=P.seq[0];
