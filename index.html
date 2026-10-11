@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Stüdyo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#12152B">
+<link rel="apple-touch-icon" href="ikon.png">
+<link rel="icon" href="ikon.png">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Stüdyo Notaları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Düzen: gece stüdyosu zemini. Üstte sahne bandı ve şarkı adı, altında büyük dokunmatik enstrüman kutuları; enstrüman partisi tam ekran açılır. Tek (koyu) tema bilinçli seçim. */
+:root{
+  --bg:#12152B; --panel:#1B1F3B; --panel2:#232850; --line:#343B73;
+  --fg:#F3F5F9; --muted:#AEB6D3; --amber:#F5B93A; --coral:#E8553E;
+  --tile:#E7EAF4; --ink:#1B1F3B;
+  --display:'Bricolage Grotesque','Figtree',system-ui,sans-serif;
+  --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:17px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body.locked{overflow:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:10px}
+h1,h2,h3,h4{font-family:var(--display);margin:0;line-height:1.05;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:20px;padding-block:24px 56px;display:flex;flex-direction:column;gap:28px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--amber)}
+.muted{color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:var(--amber);color:var(--ink);font-weight:700;font-size:16px;padding:7px 14px;border-radius:999px;white-space:nowrap}
+.back{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--panel2);color:var(--fg);font-weight:600;font-size:16px;align-self:flex-start}
+.back:hover{background:var(--line)}
+
+/* Ana ekran */
+.home-head{display:flex;flex-direction:column;gap:10px}
+.home-head h1{font-size:clamp(40px,7vw,64px);font-weight:800}
+.class-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px}
+.class-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.class-card h2{font-size:34px;font-weight:800}
+.split-list{display:flex;flex-direction:column;gap:10px}
+.split-btn{display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center;padding:10px 16px;border-radius:14px;background:var(--tile);color:var(--ink);font-weight:700;font-size:18px}
+.split-btn small{font-weight:500;font-size:14px;color:#4A5070}
+.split-btn:hover{background:#FFFFFF}
+.split-btn.is-off{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.split-btn.is-off small{color:var(--muted)}
+
+/* Split ekranı */
+.stage{display:grid;grid-template-columns:1fr;background:var(--panel);border-radius:22px;overflow:hidden}
+.stage-text{display:flex;flex-direction:column;gap:12px;padding:24px 24px 8px}
+.song{font-size:clamp(44px,8vw,76px);font-weight:800;color:#FFFFFF}
+.artist{font-size:18px;color:var(--muted)}
+.scene{width:100%;aspect-ratio:920/320;max-width:100%}
+.scene svg{display:block;width:100%;height:100%}
+@media (min-width:760px){
+  .stage{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);align-items:stretch}
+  .stage-text{padding:28px 8px 28px 32px;justify-content:center}
+  .scene{aspect-ratio:auto;min-height:260px}
+}
+.pick{display:flex;flex-direction:column;gap:14px}
+.pick h2{font-size:26px;font-weight:700}
+.inst-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (min-width:640px){.inst-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:900px){.inst-grid{grid-template-columns:repeat(var(--n,5),minmax(0,1fr))}}
+.inst-tile{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:20px;background:var(--panel);border:1px solid var(--line);transition:transform .15s ease,border-color .15s ease}
+.inst-tile:hover{border-color:var(--amber)}
+.inst-tile:active{transform:scale(.97)}
+.inst-art{display:flex;align-items:center;justify-content:center;background:var(--tile);border-radius:14px;aspect-ratio:6/5}
+.inst-art svg{width:86%;height:auto}
+.inst-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px 2px}
+.inst-name{font-family:var(--display);font-weight:800;font-size:22px}
+.inst-count{font-size:14px;color:var(--muted);white-space:nowrap}
+
+/* Enstrüman partisi */
+.sheet{position:fixed;inset:0;z-index:10;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet-bar{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}
+.sheet-bar-in{max-width:1040px;margin:0 auto;padding-inline:20px;padding-block:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sheet-where{font-size:15px;color:var(--muted)}
+.part-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.part-head .inst-art{width:120px;flex-shrink:0}
+.part-title{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 240px}
+.part-title h2{font-size:clamp(40px,7vw,60px);font-weight:800}
+.part-title p{font-size:18px;color:var(--muted);max-width:60ch}
+.loop-hero{display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px 20px}
+.loop-hero .lbl{width:100%;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--amber)}
+.big-chord{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,52px);line-height:1;min-width:2.2ch}
+.arrow{color:var(--muted);font-size:26px}
+.block{display:flex;flex-direction:column;gap:14px}
+.block-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.block h3{font-size:26px;font-weight:700}
+.tag{font-size:13px;font-weight:700;color:var(--ink);background:var(--muted);padding:3px 10px;border-radius:999px}
+.note{color:var(--muted);max-width:62ch}
+.chord-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:14px}
+.chord-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.chord-card h4{font-size:32px;font-weight:800}
+.chord-card .sub{font-size:14px;color:var(--muted);text-align:center}
+.chord-svg{width:100%;max-width:150px;height:auto}
+.piano-row{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.piano-svg{width:100%;max-width:340px;height:auto}
+.strum{display:flex;gap:10px;flex-wrap:wrap}
+.strum span{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:var(--panel2);font-size:26px;font-weight:700}
+.beat-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px}
+table.beat{border-collapse:separate;border-spacing:6px;min-width:520px;width:100%}
+table.beat th{font-weight:700;font-size:16px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+table.beat th[scope="row"]{text-align:left;color:var(--fg);white-space:nowrap;padding-right:8px}
+table.beat td{text-align:center}
+.hit,.rest{display:inline-block;width:34px;height:34px;border-radius:50%}
+.hit{background:var(--amber)}
+.rest{border:2px solid var(--line)}
+.form{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:f}
+.form-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;counter-increment:f}
+@media (min-width:640px){.form-row{grid-template-columns:170px minmax(0,1fr);align-items:center}}
+.form-name{font-family:var(--display);font-weight:700;font-size:20px;display:flex;align-items:center;gap:8px}
+.form-name::before{content:counter(f);display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--panel2);font-family:var(--body);font-size:14px;color:var(--muted)}
+.rep{font-family:var(--body);font-size:14px;font-weight:700;color:var(--ink);background:var(--amber);border-radius:999px;padding:2px 8px}
+.form-loops{display:flex;flex-direction:column;gap:6px}
+.loop{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:36px;padding:0 10px;border-radius:10px;background:var(--panel2);font-weight:700;font-size:17px}
+.player{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:16px;transition:border-color .15s}
+.player.lit{border-color:var(--amber)}
+.pl-stage{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;align-items:center}
+.pl-now{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pl-sec{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--amber);min-height:1.4em}
+.pl-big{font-family:var(--display);font-weight:800;font-size:clamp(72px,16vw,132px);line-height:.95;color:var(--muted);font-variant-numeric:tabular-nums;transition:color .12s,text-shadow .12s;overflow-wrap:anywhere}
+.pl-big.words{font-size:clamp(40px,8vw,72px);line-height:1.05}
+.player.lit .pl-big{color:var(--amber);text-shadow:0 0 32px rgba(245,185,58,.5)}
+.pl-sub{font-size:18px;color:var(--muted);min-height:1.5em}
+.pl-count{display:flex;flex-direction:column;align-items:center;gap:10px}
+.pl-num{font-family:var(--display);font-weight:800;font-size:clamp(60px,12vw,100px);line-height:1;font-variant-numeric:tabular-nums;min-width:1.2ch;text-align:center}
+.pl-dots{display:grid;grid-template-columns:repeat(4,16px);gap:8px;justify-content:center}
+.pl-dot{width:16px;height:16px;border-radius:50%;background:var(--panel2);border:2px solid var(--line)}
+.pl-dot.on{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px rgba(245,185,58,.6)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.strip{grid-column:1/-1;position:relative;overflow:hidden;height:84px;border-radius:12px;background:var(--bg);border:1px solid var(--line);--cw:46px}
+.strip-track{position:absolute;left:0;top:10px;bottom:6px;display:flex;will-change:transform}
+.cell{flex:0 0 var(--cw);width:var(--cw);height:100%;box-sizing:border-box;border-left:1px solid #262B55;position:relative;display:flex;align-items:center;padding-left:6px;transition:background-color .08s}
+.cell.bar{border-left:3px solid #5A6290}
+.cell .lab{font-family:var(--display);font-weight:800;font-size:28px;color:var(--fg);white-space:nowrap;position:relative;z-index:1;font-variant-numeric:tabular-nums}
+.cell .lab.w{font-size:18px}
+.cell.ci .lab{color:var(--muted);font-size:20px}
+.cell.past{opacity:.3}
+.cell.cur{background:var(--amber);border-radius:6px;animation:hop 150ms cubic-bezier(.2,.9,.3,1)}
+.cell.cur.start{animation-name:hopBig}
+@keyframes hop{0%{transform:translateY(0);background:#FFFFFF}35%{transform:translateY(-6px)}100%{transform:translateY(0);background:var(--amber)}}
+@keyframes hopBig{0%{transform:translateY(0) scale(1);background:#FFFFFF}35%{transform:translateY(-10px) scale(1.08)}100%{transform:translateY(0) scale(1);background:var(--amber)}}
+.cell.cur .lab{color:var(--ink)}
+.strip-head{position:absolute;top:10px;bottom:6px;left:var(--cw);width:var(--cw);border:2px solid var(--fg);border-radius:6px;pointer-events:none;opacity:.55}
+.player.beat .pl-num{animation:beat .18s ease-out}
+@keyframes beat{from{transform:scale(1.18)}to{transform:scale(1)}}
+.pl-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bpm{display:inline-flex;align-items:center;gap:8px;background:var(--panel2);border-radius:14px;padding:4px}
+.bpm button{width:48px;height:48px;border-radius:10px;border:0;background:var(--line);color:var(--fg);font-size:26px;font-weight:700;cursor:pointer}
+.bpm button:disabled{opacity:.35;cursor:default}
+.bpm output{font-family:var(--display);font-weight:800;font-size:28px;min-width:2.6ch;text-align:center;font-variant-numeric:tabular-nums}
+.bpm span{font-size:13px;font-weight:700;color:var(--muted);margin-right:6px}
+.pl-btn{min-height:56px;padding:0 20px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:700 17px var(--body);cursor:pointer}
+.pl-btn:disabled{opacity:.4;cursor:default}
+.pl-btn.primary{background:var(--amber);color:var(--ink);border-color:var(--amber);font-size:19px;min-width:150px}
+.pl-msg{color:var(--muted);font-size:15px;min-height:1.5em;max-width:70ch}
+.chip.now{background:var(--amber);color:var(--ink);box-shadow:0 0 12px rgba(245,185,58,.6)}
+.chip-fret.now{color:var(--ink)}
+.form-row.now{border-color:var(--amber)}
+@media (prefers-reduced-motion:reduce){.player.beat .pl-num{animation:none}.cell.cur{animation:none}.strip-track{transition:none}}
+.loop-hero.spread{gap:14px 28px}
+.loop-item{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fret-sub{font-size:14px;font-weight:700;color:var(--amber);white-space:nowrap}
+.chip-fret{color:var(--amber);font-size:19px;font-variant-numeric:tabular-nums}
+.fret-num{font-size:44px;font-weight:800;color:var(--amber);font-variant-numeric:tabular-nums}
+.fret-word{font-size:18px;font-weight:600;color:var(--muted)}
+.fret-head{justify-content:flex-start}
+.neck-row{grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.neck-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.neck-row .chord-card{align-items:stretch}
+.fret-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 4px}
+.fret-big{font-family:var(--display);font-weight:800;font-size:28px;color:var(--amber)}
+.neck-wrap{overflow-x:auto}
+.neck-svg{display:block;width:100%;min-width:300px;height:auto}
+.lyrics-btn{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;min-height:64px;padding:0 28px;border-radius:16px;background:var(--amber);color:var(--ink);font-family:var(--display);font-weight:800;font-size:24px}
+.lyrics-btn:hover{background:#FFC95A}
+.sheet .player.compact{position:sticky;top:68px;z-index:3;box-shadow:0 10px 24px rgba(10,12,30,.6)}
+.player.compact .pl-big{font-size:clamp(48px,9vw,84px)}
+.player.compact .pl-num{font-size:clamp(44px,8vw,72px)}
+.player.compact .pl-sub{display:none}
+.lyr{display:flex;flex-direction:column;gap:14px}
+.lyr-sec{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.lyr-sec.now{border-color:var(--amber)}
+.lyr-name{font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);font-family:var(--body)}
+.lyr-line{display:flex;flex-wrap:wrap;align-items:flex-end;row-gap:6px;padding:4px 6px;border-radius:10px;min-width:0}
+.lyr-line.now{background:var(--panel2)}
+.seg{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
+.box{min-height:38px;display:flex;align-items:flex-end;padding-right:6px}
+.box .chip{height:34px;min-width:40px;font-size:17px}
+.txt{font-size:22px;line-height:1.3;white-space:pre-wrap;color:var(--fg)}
+.lyr-line.bare .txt{display:none}
+.tip{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border-radius:16px;padding:14px 16px;max-width:72ch}
+.tip b{color:var(--amber);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.inst-tile{transition:none}.inst-tile:active{transform:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const ICONS = {
+  gitar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<g transform="rotate(38 120 100) translate(0 14)">
+<circle cx="102" cy="-6" r="4" fill="#8E97B8"/><circle cx="102" cy="8" r="4" fill="#8E97B8"/><circle cx="138" cy="-6" r="4" fill="#8E97B8"/><circle cx="138" cy="8" r="4" fill="#8E97B8"/>
+<rect x="106" y="-14" width="28" height="30" rx="6" fill="#E8553E"/>
+<circle cx="120" cy="96" r="32" fill="#F5B93A"/>
+<circle cx="120" cy="142" r="44" fill="#F5B93A"/>
+<rect x="112" y="14" width="16" height="90" fill="#1B1F3B"/>
+<path d="M112 26h16M112 38h16M112 50h16M112 62h16M112 74h16M112 86h16" fill="none" stroke="#C9D0E6" stroke-width="1.5"/>
+<circle cx="120" cy="124" r="18" fill="none" stroke="#E8553E" stroke-width="3"/>
+<circle cx="120" cy="124" r="13" fill="#1B1F3B"/>
+<rect x="100" y="160" width="40" height="8" rx="3" fill="#1B1F3B"/>
+<path d="M115 -4V164M118.5 -4V164M121.5 -4V164M125 -4V164" fill="none" stroke="#F3F5F9" stroke-width="1"/>
+</g>
+</svg>`,
+  bateri: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<ellipse cx="120" cy="185" rx="100" ry="7" fill="#C9D0E6"/>
+<path d="M38 60V182M24 182H52M204 44V182M190 182H218" fill="none" stroke="#1B1F3B" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="38" cy="58" rx="30" ry="6" fill="#F5B93A"/>
+<ellipse cx="38" cy="66" rx="30" ry="6" fill="#D99A1C"/>
+<ellipse cx="204" cy="44" rx="34" ry="7" fill="#F5B93A" transform="rotate(-8 204 44)"/>
+<path d="M172 150L166 182M198 150L204 182" fill="none" stroke="#1B1F3B" stroke-width="3" stroke-linecap="round"/>
+<rect x="162" y="104" width="46" height="48" rx="4" fill="#E8553E"/>
+<ellipse cx="185" cy="104" rx="23" ry="6" fill="#F3F5F9" stroke="#1B1F3B" stroke-width="2"/>
+<path d="M52 124L42 182M52 124L62 182" fill="none" stroke="#1B1F3B" stroke-width="3" stroke-linecap="round"/>
+<rect x="30" y="104" width="44" height="20" rx="4" fill="#2A3060"/>
+<ellipse cx="52" cy="104" rx="22" ry="6" fill="#F3F5F9" stroke="#1B1F3B" stroke-width="2"/>
+<path d="M82 166L72 184M158 166L168 184" fill="none" stroke="#1B1F3B" stroke-width="4" stroke-linecap="round"/>
+<circle cx="120" cy="134" r="48" fill="#1B1F3B"/>
+<circle cx="120" cy="134" r="40" fill="#F3F5F9"/>
+<circle cx="120" cy="134" r="14" fill="#F5B93A"/>
+<rect x="117" y="72" width="6" height="16" fill="#1B1F3B"/>
+<rect x="70" y="62" width="44" height="30" rx="4" fill="#E8553E"/>
+<ellipse cx="92" cy="62" rx="22" ry="6" fill="#F3F5F9" stroke="#1B1F3B" stroke-width="2"/>
+<rect x="126" y="62" width="44" height="30" rx="4" fill="#E8553E"/>
+<ellipse cx="148" cy="62" rx="22" ry="6" fill="#F3F5F9" stroke="#1B1F3B" stroke-width="2"/>
+</svg>`,
+  vokal: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<path d="M154 19.7A46 46 0 0 1 191.3 73" fill="none" stroke="#E8553E" stroke-width="5" stroke-linecap="round"/>
+<path d="M156.4 5.9A60 60 0 0 1 205.1 75.4" fill="none" stroke="#F5B93A" stroke-width="5" stroke-linecap="round"/>
+<g transform="rotate(30 120 110)">
+<path d="M100 94L140 94L133 178Q120 188 107 178Z" fill="#1B1F3B"/>
+<rect x="115" y="112" width="10" height="18" rx="5" fill="#E8553E"/>
+<rect x="96" y="84" width="48" height="14" rx="5" fill="#F5B93A"/>
+<circle cx="120" cy="58" r="32" fill="#2A3060"/>
+<path d="M92 44H148M88 58H152M92 72H148" fill="none" stroke="#C9D0E6" stroke-width="2"/>
+<ellipse cx="120" cy="58" rx="13" ry="32" fill="none" stroke="#C9D0E6" stroke-width="2"/>
+</g>
+</svg>`,
+  piyano: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<ellipse cx="120" cy="186" rx="100" ry="6" fill="#C9D0E6"/>
+<rect x="36" y="134" width="12" height="50" fill="#2A3060"/>
+<rect x="192" y="134" width="12" height="50" fill="#2A3060"/>
+<rect x="42" y="46" width="156" height="66" fill="#1B1F3B"/>
+<rect x="36" y="36" width="168" height="12" rx="4" fill="#2A3060"/>
+<rect x="82" y="62" width="76" height="40" rx="4" fill="#343B73"/>
+<rect x="98" y="54" width="44" height="40" rx="2" fill="#F3F5F9"/>
+<path d="M104 64H136M104 73H136M104 82H136" fill="none" stroke="#1B1F3B" stroke-width="1.5"/>
+<circle cx="111" cy="73" r="3" fill="#E8553E"/><circle cx="122" cy="64" r="3" fill="#E8553E"/><circle cx="131" cy="82" r="3" fill="#E8553E"/>
+<rect x="42" y="142" width="156" height="42" fill="#1B1F3B"/>
+<rect x="34" y="106" width="172" height="10" rx="3" fill="#2A3060"/>
+<rect x="42" y="114" width="156" height="24" fill="#F3F5F9"/>
+<path d="M54 114V138M66 114V138M78 114V138M90 114V138M102 114V138M114 114V138M126 114V138M138 114V138M150 114V138M162 114V138M174 114V138M186 114V138" fill="none" stroke="#C9D0E6" stroke-width="1"/>
+<g fill="#1B1F3B">
+<rect x="50.5" y="114" width="7" height="14"/><rect x="62.5" y="114" width="7" height="14"/><rect x="86.5" y="114" width="7" height="14"/><rect x="98.5" y="114" width="7" height="14"/><rect x="110.5" y="114" width="7" height="14"/><rect x="134.5" y="114" width="7" height="14"/><rect x="146.5" y="114" width="7" height="14"/><rect x="170.5" y="114" width="7" height="14"/><rect x="182.5" y="114" width="7" height="14"/>
+</g>
+<rect x="34" y="138" width="172" height="8" rx="3" fill="#E8553E"/>
+<rect x="105" y="172" width="11" height="5" rx="2" fill="#F5B93A"/><rect x="124" y="172" width="11" height="5" rx="2" fill="#F5B93A"/>
+</svg>`,
+  perkusyon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<ellipse cx="118" cy="182" rx="94" ry="7" fill="#C9D0E6"/>
+<path d="M52 60C46 104 54 150 62 178L110 178C118 150 126 104 120 60Z" fill="#E8553E"/>
+<path d="M51 98Q86 108 121 98M56 150Q86 159 116 150" fill="none" stroke="#1B1F3B" stroke-width="3"/>
+<ellipse cx="86" cy="60" rx="34" ry="9" fill="#F3F5F9" stroke="#1B1F3B" stroke-width="3"/>
+<path d="M126 96C122 126 128 158 133 178L179 178C184 158 190 126 186 96Z" fill="#F5B93A"/>
+<path d="M125 122Q156 130 187 122M130 158Q156 165 182 158" fill="none" stroke="#1B1F3B" stroke-width="3"/>
+<ellipse cx="156" cy="96" rx="30" ry="8" fill="#F3F5F9" stroke="#1B1F3B" stroke-width="3"/>
+<g transform="rotate(35 204 44)">
+<rect x="201" y="58" width="6" height="30" rx="3" fill="#1B1F3B"/>
+<ellipse cx="204" cy="42" rx="15" ry="19" fill="#2A3060"/>
+<path d="M190 38Q204 45 218 38" fill="none" stroke="#F5B93A" stroke-width="3"/>
+</g>
+</svg>`,
+  keman: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<path d="M22 54L98 186" fill="none" stroke="#1B1F3B" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M27 56L100 182" fill="none" stroke="#8E97B8" stroke-width="1.5"/>
+<path d="M96.5 173.5L101.5 182.2" fill="none" stroke="#E8553E" stroke-width="6" stroke-linecap="round"/>
+<g transform="rotate(-30 120 100) translate(0 2)">
+<path d="M104 16H136M104 24H136" fill="none" stroke="#8E97B8" stroke-width="3" stroke-linecap="round"/>
+<circle cx="120" cy="8" r="7" fill="#1B1F3B"/>
+<rect x="114" y="10" width="12" height="22" fill="#1B1F3B"/>
+<path d="M120 70C150 70 154 100 138 112C132 118 132 124 140 130C162 146 156 182 120 182C84 182 78 146 100 130C108 124 108 118 102 112C86 100 90 70 120 70Z" fill="#E8553E"/>
+<ellipse cx="103" cy="170" rx="10" ry="7" fill="#2A3060"/>
+<rect x="114" y="28" width="12" height="94" fill="#1B1F3B"/>
+<path d="M105 126q-4 8 0 16M135 126q4 8 0 16" fill="none" stroke="#1B1F3B" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M114 154L126 154L123 178L117 178Z" fill="#1B1F3B"/>
+<rect x="109" y="139" width="22" height="4" rx="1" fill="#F3F5F9"/>
+<path d="M117 14V158M119 14V158M121 14V158M123 14V158" fill="none" stroke="#F3F5F9" stroke-width="0.8"/>
+</g>
+</svg>`,
+  flut: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+<path d="M68 52V26L84 32" fill="none" stroke="#E8553E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="62" cy="53" rx="7" ry="5.5" fill="#E8553E" transform="rotate(-20 62 53)"/>
+<path d="M166 166V142L190 136V160" fill="none" stroke="#F5B93A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="160" cy="167" rx="7" ry="5.5" fill="#F5B93A" transform="rotate(-20 160 167)"/>
+<ellipse cx="184" cy="161" rx="7" ry="5.5" fill="#F5B93A" transform="rotate(-20 184 161)"/>
+<g transform="rotate(-25 120 100)">
+<rect x="20" y="92" width="200" height="14" rx="7" fill="#8E97B8"/>
+<path d="M28 96H212" fill="none" stroke="#C9D0E6" stroke-width="2" stroke-linecap="round"/>
+<rect x="16" y="92" width="9" height="14" rx="3" fill="#1B1F3B"/>
+<rect x="84" y="90" width="5" height="18" rx="2" fill="#1B1F3B"/>
+<rect x="184" y="90" width="5" height="18" rx="2" fill="#1B1F3B"/>
+<ellipse cx="56" cy="99" rx="13" ry="9" fill="#F5B93A"/>
+<ellipse cx="56" cy="99" rx="4.5" ry="3" fill="#1B1F3B"/>
+<g fill="#F3F5F9" stroke="#1B1F3B" stroke-width="2">
+<circle cx="104" cy="99" r="6.5"/><circle cx="120" cy="99" r="6.5"/><circle cx="136" cy="99" r="6.5"/><circle cx="152" cy="99" r="6.5"/><circle cx="168" cy="99" r="6.5"/>
+</g>
+<circle cx="198" cy="99" r="4.5" fill="#E8553E"/><circle cx="209" cy="99" r="4.5" fill="#E8553E"/>
+</g>
+</svg>`
+};
+const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="520 0 920 320" preserveAspectRatio="xMidYMid slice">
+<rect width="1440" height="320" fill="#1B1F3B"/>
+<rect y="252" width="1440" height="68" fill="#12152B"/>
+<rect y="250" width="1440" height="4" fill="#2A3060"/>
+<g transform="translate(520 0)">
+<ellipse cx="330" cy="288" rx="250" ry="20" fill="#E8553E"/>
+<ellipse cx="330" cy="288" rx="214" ry="14" fill="none" stroke="#F5B93A" stroke-width="3"/>
+<g fill="#2A3060">
+<rect x="330" y="30" width="60" height="60" rx="6"/><rect x="466" y="30" width="60" height="60" rx="6"/><rect x="602" y="30" width="60" height="60" rx="6"/>
+<rect x="398" y="98" width="60" height="60" rx="6"/><rect x="534" y="98" width="60" height="60" rx="6"/><rect x="670" y="98" width="60" height="60" rx="6"/>
+</g>
+<g fill="#343B73">
+<rect x="398" y="30" width="60" height="60" rx="6"/><rect x="534" y="30" width="60" height="60" rx="6"/><rect x="670" y="30" width="60" height="60" rx="6"/>
+<rect x="330" y="98" width="60" height="60" rx="6"/><rect x="466" y="98" width="60" height="60" rx="6"/><rect x="602" y="98" width="60" height="60" rx="6"/>
+</g>
+<path d="M345 40v40M360 40v40M375 40v40M481 40v40M496 40v40M511 40v40M617 40v40M632 40v40M647 40v40M413 108v40M428 108v40M443 108v40M549 108v40M564 108v40M579 108v40M685 108v40M700 108v40M715 108v40" fill="none" stroke="#343B73" stroke-width="4" stroke-linecap="round"/>
+<path d="M408 45h40M408 60h40M408 75h40M544 45h40M544 60h40M544 75h40M680 45h40M680 60h40M680 75h40M340 113h40M340 128h40M340 143h40M476 113h40M476 128h40M476 143h40M612 113h40M612 128h40M612 143h40" fill="none" stroke="#2A3060" stroke-width="4" stroke-linecap="round"/>
+<rect x="772" y="32" width="124" height="56" rx="14" fill="none" stroke="#E8553E" stroke-width="2" opacity="0.4"/>
+<rect x="778" y="38" width="112" height="44" rx="10" fill="#E8553E"/>
+<text x="835" y="68" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="3" fill="#FFFFFF">KAYIT</text>
+<rect x="118" y="0" width="4" height="34" fill="#C9D0E6"/>
+<path d="M96 62 L144 62 L214 252 L26 252 Z" fill="#F5B93A" opacity="0.07"/>
+<path d="M92 62 L148 62 L134 32 L106 32 Z" fill="#F5B93A"/>
+<circle cx="252" cy="80" r="5" fill="#F5B93A"/>
+<path d="M228 112 A24 26 0 0 1 276 112" fill="none" stroke="#C9D0E6" stroke-width="5" stroke-linecap="round"/>
+<rect x="220" y="106" width="15" height="26" rx="7" fill="#E8553E"/>
+<rect x="269" y="106" width="15" height="26" rx="7" fill="#E8553E"/>
+<path d="M382 266 C340 300 250 262 200 292 S150 300 124 290" fill="none" stroke="#F5B93A" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 276 L92 290 M120 276 L148 290 M120 276 L120 292" fill="none" stroke="#C9D0E6" stroke-width="4" stroke-linecap="round"/>
+<path d="M120 276 L120 150" fill="none" stroke="#C9D0E6" stroke-width="4"/>
+<path d="M104 160 L182 116" fill="none" stroke="#C9D0E6" stroke-width="4" stroke-linecap="round"/>
+<circle cx="120" cy="151" r="6" fill="#F5B93A"/>
+<path d="M176 119 L196 108" fill="none" stroke="#F3F5F9" stroke-width="12" stroke-linecap="round"/>
+<circle cx="204" cy="103" r="12" fill="#343B73" stroke="#F3F5F9" stroke-width="3"/>
+<path d="M404 194 Q428 176 452 194" fill="none" stroke="#0F1226" stroke-width="5"/>
+<rect x="380" y="192" width="96" height="80" rx="8" fill="#0F1226" stroke="#2A3060" stroke-width="2"/>
+<rect x="388" y="216" width="80" height="48" rx="5" fill="#2A3060"/>
+<circle cx="428" cy="240" r="18" fill="#0F1226"/>
+<circle cx="428" cy="240" r="7" fill="#343B73"/>
+<circle cx="394" cy="204" r="4" fill="#F5B93A"/><circle cx="408" cy="204" r="4" fill="#F5B93A"/><circle cx="422" cy="204" r="4" fill="#F5B93A"/>
+<rect x="446" y="201" width="22" height="6" rx="3" fill="#E8553E"/>
+<path d="M514 216 L506 272 M546 216 L554 272 M510 250 L550 250" fill="none" stroke="#C9D0E6" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="530" cy="214" rx="30" ry="8" fill="#F5B93A"/>
+<rect x="612" y="236" width="12" height="36" fill="#2A3060"/><rect x="866" y="236" width="12" height="36" fill="#2A3060"/>
+<rect x="624" y="120" width="56" height="76" rx="6" fill="#0F1226" stroke="#2A3060" stroke-width="2"/>
+<circle cx="652" cy="140" r="8" fill="#343B73"/><circle cx="652" cy="170" r="17" fill="#2A3060"/><circle cx="652" cy="170" r="7" fill="#F5B93A"/>
+<rect x="810" y="120" width="56" height="76" rx="6" fill="#0F1226" stroke="#2A3060" stroke-width="2"/>
+<circle cx="838" cy="140" r="8" fill="#343B73"/><circle cx="838" cy="170" r="17" fill="#2A3060"/><circle cx="838" cy="170" r="7" fill="#F5B93A"/>
+<rect x="739" y="178" width="12" height="18" fill="#343B73"/>
+<rect x="696" y="110" width="98" height="70" rx="6" fill="#0F1226" stroke="#343B73" stroke-width="3"/>
+<g fill="#F5B93A">
+<rect x="706" y="140" width="4" height="10" rx="2"/><rect x="714" y="134" width="4" height="22" rx="2"/><rect x="722" y="128" width="4" height="34" rx="2"/><rect x="730" y="136" width="4" height="18" rx="2"/>
+<rect x="746" y="132" width="4" height="26" rx="2"/><rect x="754" y="139" width="4" height="12" rx="2"/><rect x="762" y="130" width="4" height="30" rx="2"/>
+<rect x="778" y="135" width="4" height="20" rx="2"/><rect x="786" y="138" width="4" height="14" rx="2"/>
+</g>
+<g fill="#E8553E"><rect x="738" y="125" width="4" height="40" rx="2"/><rect x="770" y="123" width="4" height="44" rx="2"/></g>
+<path d="M616 196 L874 196 L896 232 L594 232 Z" fill="#343B73"/>
+<rect x="594" y="232" width="302" height="10" rx="3" fill="#2A3060"/>
+<path d="M690 204v20M704 204v20M718 204v20M732 204v20M746 204v20M760 204v20M774 204v20M788 204v20M802 204v20" fill="none" stroke="#1B1F3B" stroke-width="3" stroke-linecap="round"/>
+<g fill="#F5B93A"><rect x="686" y="208" width="8" height="5" rx="1"/><rect x="714" y="206" width="8" height="5" rx="1"/><rect x="742" y="210" width="8" height="5" rx="1"/><rect x="770" y="214" width="8" height="5" rx="1"/><rect x="798" y="212" width="8" height="5" rx="1"/></g>
+<g fill="#F3F5F9"><rect x="700" y="214" width="8" height="5" rx="1"/><rect x="728" y="216" width="8" height="5" rx="1"/><rect x="756" y="205" width="8" height="5" rx="1"/><rect x="784" y="208" width="8" height="5" rx="1"/></g>
+<g fill="#E8553E"><circle cx="640" cy="209" r="3.5"/><circle cx="656" cy="209" r="3.5"/><circle cx="638" cy="222" r="3.5"/><circle cx="656" cy="222" r="3.5"/></g>
+<g fill="#F3F5F9"><circle cx="836" cy="209" r="3.5"/><circle cx="852" cy="209" r="3.5"/><circle cx="836" cy="222" r="3.5"/><circle cx="854" cy="222" r="3.5"/></g>
+</g>
+</svg>`;
+
+const CLASSES = ['7A','7B','7C','8A'];
+
+const LOOP = ['Am','Em','Dm','Em'];
+const YASANACAKSA_FORM = [
+  {name:'Kıta 1', loops:[LOOP, LOOP]},
+  {name:'Nakarat', loops:[LOOP, LOOP, LOOP]},
+  {name:'Ara bölüm', rep:2, loops:[LOOP]},
+  {name:'Kıta 2', loops:[LOOP, LOOP]},
+  {name:'Nakarat', loops:[LOOP, LOOP, LOOP]}
+];
+
+/* Gitar: Drop D akort (Re La Re Sol Si Mi). Power akor = en kalın iki tel, tek parmak, aynı perde.
+   Perde = akorun kök sesinin Re'den (D) uzaklığı. */
+const NOTE_IDX = {C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
+function dropDFret(chord){ const m=chord.match(/^[A-G](#|b)?/); return m ? (NOTE_IDX[m[0]]-2+12)%12 : null; }
+function fretLabel(f){ return f===0 ? 'Boş teller' : `${f}. perde`; }
+/* Piyano: akor adından üçlü akor (kök + 3/4 + 7 yarım ses), Do'dan başlayan iki oktav içinde. */
+const NAMES_SHARP=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const SOLF={C:'Do','C#':'Do♯',D:'Re','D#':'Re♯',E:'Mi',F:'Fa','F#':'Fa♯',G:'Sol','G#':'Sol♯',A:'La','A#':'La♯',B:'Si'};
+function triad(chord){ const m=chord.match(/^([A-G](#|b)?)(m(?!aj))?/); const r=NOTE_IDX[m[1]]; return [r, r+(m[3]?3:4), r+7]; }
+const FLAT={1:'Re♭',3:'Mi♭',6:'Sol♭',8:'La♭',10:'Si♭'};
+let FLATS=false; /* bemollü tonlarda (ör. Re minör) Si♭ yazılır */
+function solf(n){ const i=n%12; return (FLATS&&FLAT[i]) || SOLF[NAMES_SHARP[i]]; }
+function useFlats(ch){ const m=ch.match(/^([A-G])(#|b)?(m(?!aj))?/); if(m[2]==='b') return true; if(m[2]==='#') return false; return m[3] ? 'DGCF'.includes(m[1]) : m[1]==='F'; }
+function chordNotes(ch){ FLATS=useFlats(ch); return triad(ch).map(solf); }
+function chordsOf(s){
+  const sh=activeSheet(s);
+  if(sh) return [...new Set(sh.flatMap(x=>x.lines.flatMap(l=>l.chords.map(c=>c.c))))];
+  return [...new Set((s.loop || s.form.flatMap(x=>x.loops.flat())).map(t=>t.split(':')[0]))];
+}
+
+/* ---------- Sözler + akorlar: öğretmenin yapıştırdığı "akor üstte, söz altta" metni (sozler/<split>.txt) ---------- */
+const SHEETS={};
+const SEC_TR={'intro':'Giriş','verse':'Kıta','pre-chorus':'Ön nakarat','prechorus':'Ön nakarat','pre chorus':'Ön nakarat','chorus':'Nakarat','refrain':'Nakarat','bridge':'Köprü','instrumental':'Enstrümantal','interlude':'Ara bölüm','solo':'Solo','outro':'Bitiş','ending':'Bitiş'};
+const CH_RE=/^[A-G](#|b)?(maj|min|m|dim|aug|sus|add)?\d*(\/[A-G](#|b)?)?$/;
+function parseTok(t){
+  if(/^\d+$/.test(t)) return {dur:+t};
+  const m=t.match(/^([A-G](#|b)?m?)([248])$/); if(m) return {c:m[1],beats:+m[3]};
+  if(CH_RE.test(t)) return {c:t};
+  return null;
+}
+function isChordLine(line){
+  const toks=line.trim().split(/\s+/).filter(Boolean);
+  if(!toks.length) return false;
+  const ps=toks.map(parseTok);
+  return ps.every(Boolean) && ps.some(x=>x.c);
+}
+function parseSheet(text,defBeats){
+  const lines=text.replace(/\r/g,'').split('\n'), out=[]; let sec=null;
+  const open=name=>{ sec={name,lines:[]}; out.push(sec); };
+  for(let i=0;i<lines.length;i++){
+    const L=lines[i], t=L.trim();
+    if(!t || t.startsWith('#')) continue;
+    const h=t.match(/^\[(.+?)\]$/);
+    if(h){ const key=h[1].toLowerCase().replace(/\s*\d+$/,'').trim(); open(SEC_TR[key]||h[1]); continue; }
+    if(isChordLine(L)){
+      const chords=[], re=/\S+/g; let m;
+      while((m=re.exec(L))){ const q=parseTok(m[0]); if(q.c) chords.push({c:q.c,beats:q.beats||0,col:m.index}); else if(chords.length) chords[chords.length-1].beats=q.dur; }
+      let lyric=''; const nx=lines[i+1];
+      if(nx!==undefined && nx.trim() && !nx.trim().startsWith('#') && !isChordLine(nx) && !/^\[.+\]$/.test(nx.trim())){ lyric=nx; i++; }
+      if(!sec) open('Giriş');
+      sec.lines.push({chords,lyric}); continue;
+    }
+    if(!sec) open('');
+    sec.lines.push({chords:[],lyric:L});
+  }
+  out.forEach(x=>x.lines.forEach(l=>l.chords.forEach(c=>{ if(!c.beats) c.beats=defBeats; })));
+  return out.filter(x=>x.lines.length);
+}
+function activeSheet(s){ const x=s&&SHEETS[s.id]; return x&&x.status==='ok' ? x.data : null; }
+function loadSheet(sid){
+  if(SHEETS[sid]) return;
+  SHEETS[sid]={status:'loading'};
+  fetch(`sozler/${sid}.txt`,{cache:'no-cache'}).then(r=>r.ok?r.text():'').then(t=>{
+    const sheet=t && t.split('\n').some(l=>l.trim() && !l.trim().startsWith('#')) ? parseSheet(t,SPLITS[sid].beats||4) : null;
+    const hasChords=sheet && sheet.some(x=>x.lines.some(l=>l.chords.length));
+    SHEETS[sid]= hasChords ? {status:'ok',data:sheet} : {status:'none'};
+    if(hasChords && location.hash.replace('#','').split('-')[0]===sid && !P.on) render();
+  }).catch(()=>{ SHEETS[sid]={status:'none'}; });
+}
+function sheetLine(ln,si,ri,kind,words){
+  const L=ln.lyric||'';
+  if(words || !ln.chords.length) return L.trim() ? `<div class="lyr-line" data-line="${si}-${ri}"><span class="seg"><span class="txt">${esc(L.trim())}</span></span></div>` : '';
+  const cols=ln.chords.map(c=>c.col); let h='';
+  if(cols[0]>0 && L.slice(0,cols[0]).trim()) h+=`<span class="seg"><span class="box"></span><span class="txt">${esc(L.slice(0,cols[0]))}</span></span>`;
+  ln.chords.forEach((c,ci)=>{
+    const t=L.slice(cols[ci], ci+1<cols.length?cols[ci+1]:undefined);
+    h+=`<span class="seg"><span class="box">${chipHTML(c.c,kind,`${si}-${ri}-${ci}`)}</span><span class="txt">${t?esc(t):'&nbsp;'}</span></span>`;
+  });
+  return `<div class="lyr-line${L.trim()?'':' bare'}" data-line="${si}-${ri}">${h}</div>`;
+}
+function sheetHTML(sheet,kind){
+  const words=kind==='vokal'||NOTE_ONLY.has(kind);
+  return `<div class="lyr">${sheet.map((sec,si)=>`<section class="lyr-sec" data-si="${si}">${sec.name?`<h4 class="lyr-name">${esc(sec.name)}</h4>`:''}${sec.lines.map((ln,ri)=>sheetLine(ln,si,ri,kind,words)).join('')}</section>`).join('')}</div>`;
+}
+
+/* 7C · 1. Split — Mamma Mia: tek döngü yok, bölümler farklı akorlarla. */
+const KITA = [['D','G'],['D','G'],['D'],['D','G'],['G','A']];
+const ON_NAKARAT = [['G','D','A'],['G','D','A']];
+const NAKARAT = [['D','G','D','G'],['D','A','G'],['D','G']];
+const MAMMA_FORM = [
+  {name:'Kıta 1', loops:KITA},
+  {name:'Ön nakarat', loops:ON_NAKARAT},
+  {name:'Nakarat', loops:NAKARAT},
+  {name:'Kıta 2', loops:KITA},
+  {name:'Ön nakarat', loops:ON_NAKARAT},
+  {name:'Nakarat', loops:[['D','G','D','G'],['D','A','G']]},
+  {name:'Köprü', loops:[['D','G','D','G']]},
+  {name:'Son nakarat', loops:NAKARAT}
+];
+
+/* 7A · 2. Split — Cherry Cherry Lady (Cheri Cheri Lady), Re minör. Kaynak: GuitarTuna kolay akorlar. */
+const CCL_GIRIS = [['Dm','Dm','Bb','C','Dm']];
+const CCL_SATIR = ['Dm','Am','Gm','C','Dm'];
+const CCL_KITA = [CCL_SATIR, CCL_SATIR, ['Am','Dm','Am','Am']];
+const CHERRY_FORM = [
+  {name:'Giriş', rep:2, loops:CCL_GIRIS},
+  {name:'Kıta 1', loops:CCL_KITA},
+  {name:'Nakarat', loops:[CCL_SATIR,CCL_SATIR,CCL_SATIR,CCL_SATIR,['Am']]},
+  {name:'Ara bölüm', rep:2, loops:CCL_GIRIS},
+  {name:'Kıta 2', loops:CCL_KITA},
+  {name:'Nakarat', loops:[CCL_SATIR,CCL_SATIR,CCL_SATIR,CCL_SATIR,['Am','Dm','Am']]},
+  {name:'Ara bölüm', rep:2, loops:CCL_GIRIS},
+  {name:'Son nakarat', loops:[CCL_SATIR,CCL_SATIR,CCL_SATIR,CCL_SATIR]},
+  {name:'Bitiş', loops:[CCL_SATIR]}
+];
+
+/* 7A · 1. Split — La Isla Bonita, La minör. Öğretmenin yazdığı akor sayfası; sayılar vuruş (yazılmayanlar 2). */
+const LIB_KITA_YARIM = [['Am','G','Am:4'],['F','Am','C','G']];
+const LIB_NAKARAT = [['Am','G'],['Dm','C'],['G','Dm'],['Dm','Am'],['Am','G'],['Dm','C'],['G','Dm'],['Em','Am']];
+const LIB_NAKARAT_SON = [['Am','G'],['Dm','C'],['G','Dm'],['Dm','Am'],['Am','G'],['Dm','C'],['G','Dm'],['Em','Am','F','G']];
+const ISLA_FORM = [
+  {name:'Kıta 1', loops:[...LIB_KITA_YARIM, ...LIB_KITA_YARIM]},
+  {name:'Nakarat', loops:LIB_NAKARAT},
+  {name:'Kıta 2', loops:[...LIB_KITA_YARIM, ...LIB_KITA_YARIM]},
+  {name:'Nakarat', loops:LIB_NAKARAT},
+  {name:'Köprü', loops:[['Dm','Bb','C','Dm'],['Dm','Bb','C'],['Dm','Bb','C','Dm'],['Dm','Bb','C','E','Am']]},
+  {name:'Enstrümantal', loops:LIB_KITA_YARIM},
+  {name:'Kıta 3', loops:LIB_KITA_YARIM},
+  {name:'Nakarat', loops:LIB_NAKARAT_SON},
+  {name:'Son nakarat', loops:LIB_NAKARAT_SON},
+  {name:'Bitiş', loops:[['Am:4']]}
+];
+
+const SPLITS = {
+  '7a1': {
+    cls:'7A', no:1, song:'La Isla Bonita', artist:'Madonna', beats:2, bpm:80,
+    lyricsUrl:'https://www.google.com/search?q=La+Isla+Bonita+Madonna+lyrics&safe=active',
+    form: ISLA_FORM,
+    instruments: [
+      {id:'gitar', name:'Gitar', count:3, kind:'gitar',
+        lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Perdeleri öğren, sonra aşağıdaki akıştan nerede olduğunu takip et.',
+        tip:'Akorlar çoğunlukla 2 vuruş sürer, sayaç 2’den başlar. Hızlı geçişler için parmağını kaldırmadan kaydır.'},
+      {id:'bateri', name:'Bateri', count:1, kind:'bateri',
+        lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
+        tip:'Köprüden enstrümantale geçerken kısa bir dolgu (fill) yap, yeni bölüme zil ile gir.'},
+      {id:'vokal', name:'Vokal', count:2, kind:'vokal',
+        lead:'Sözleri aşağıdaki düğmeden aç. Şarkının bölümleri de sırasıyla burada.',
+        tip:'Girmeden önce gitar ya da piyanonun ilk sesini dinle, sesini ona göre bul.'},
+      {id:'piyano', name:'Piyano', count:3, kind:'piyano',
+        lead:'Sağ elinle üçlü akoru, sol elinle akorun kök sesini çal. Akorlar çoğunlukla 2 vuruş sürer.',
+        tip:'B♭ akorunda Si♭, köprünün sonundaki E akorunda Sol♯ siyah tuştur.'},
+      {id:'perkusyon', name:'Perküsyon', count:2, kind:'perkusyon',
+        lead:'İki perküsyon partisi var. Hangisini çalacağını öğretmeninle belirle; ikiniz birlikte ritmi tamamlarsınız.',
+        tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'}
+    ]
+  },
+  '7a2': {
+    cls:'7A', no:2, song:'Cherry Cherry Lady', artist:'Modern Talking', bpm:80,
+    lyricsUrl:'https://www.google.com/search?q=Cheri+Cheri+Lady+Modern+Talking+lyrics&safe=active',
+    form: CHERRY_FORM,
+    instruments: [
+      {id:'gitar', name:'Gitar', count:3, kind:'gitar',
+        lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Perdeleri öğren, sonra aşağıdaki akıştan nerede olduğunu takip et.',
+        tip:'Bu şarkıda beş yer var: boş teller, 5, 7, 8 ve 10. perde. Nakaratta sıra hep aynı: 0 → 7 → 5 → 10 → 0.'},
+      {id:'bateri', name:'Bateri', count:1, kind:'bateri',
+        lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
+        tip:'Ara bölümden nakarata ya da kıtaya geçerken kısa bir dolgu (fill) yap, yeni bölüme zil ile gir.'},
+      {id:'vokal', name:'Vokal', count:2, kind:'vokal',
+        lead:'Sözleri aşağıdaki düğmeden aç. Şarkının bölümleri de sırasıyla burada.',
+        tip:'Girmeden önce gitar ya da piyanonun ilk sesini dinle, sesini ona göre bul.'},
+      {id:'piyano', name:'Piyano', count:3, kind:'piyano',
+        lead:'Sağ elinle üçlü akoru, sol elinle akorun kök sesini çal.',
+        tip:'Gm ve B♭ akorlarında Si♭ siyah tuştur. Nakaratta sıra hep aynı: Dm → Am → Gm → C → Dm.'},
+      {id:'perkusyon', name:'Perküsyon', count:2, kind:'perkusyon',
+        lead:'İki perküsyon partisi var. Hangisini çalacağını öğretmeninle belirle; ikiniz birlikte ritmi tamamlarsınız.',
+        tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'},
+      {id:'keman', name:'Keman', count:1, kind:'keman',
+        lead:'Notan öğretmenin tarafından hazırlanıyor. Çalıcı sana şarkının hangi bölümünde olduğunu gösterir.',
+        tip:'Bölüm değişimlerini sayaçtan takip et; 1’e gelince yeni bölüme hazırlan.'},
+      {id:'flut', name:'Flüt', count:1, kind:'flut',
+        lead:'Notan öğretmenin tarafından hazırlanıyor. Çalıcı sana şarkının hangi bölümünde olduğunu gösterir.',
+        tip:'Bölüm değişimlerini sayaçtan takip et; 1’e gelince yeni bölüme hazırlan.'}
+    ]
+  },
+  '7c1': {
+    cls:'7C', no:1, song:'Mamma Mia', artist:'ABBA', lyricsUrl:'https://genius.com/Abba-mamma-mia-lyrics',
+    form: MAMMA_FORM,
+    instruments: [
+      {id:'gitar', name:'Gitar', count:3, kind:'gitar',
+        lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Perdeleri öğren, sonra aşağıdaki akıştan nerede olduğunu takip et.',
+        tip:'Bu şarkıda üç yer var: boş teller, 5. perde ve 7. perde. Parmağını kaldırmadan teller üzerinde kaydır.'},
+      {id:'bateri', name:'Bateri', count:1, kind:'bateri',
+        lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
+        tip:'Ön nakarattan nakarata geçerken kısa bir dolgu (fill) yap, nakarata zil ile gir.'},
+      {id:'vokal', name:'Vokal', count:2, kind:'vokal',
+        lead:'Sözleri aşağıdaki düğmeden aç. Şarkının bölümleri de sırasıyla burada.',
+        tip:'Girmeden önce gitar ya da piyanonun ilk sesini dinle, sesini ona göre bul.'},
+      {id:'piyano', name:'Piyano', count:3, kind:'piyano',
+        lead:'Sağ elinle üçlü akoru, sol elinle akorun kök sesini çal. Şarkıda üç akor var.',
+        tip:'Re majörde Fa♯, La majörde Do♯ siyah tuştur. Sarı işaretli siyah tuşlara dikkat et.'},
+      {id:'perkusyon', name:'Perküsyon', count:2, kind:'perkusyon',
+        lead:'İki perküsyon partisi var. Hangisini çalacağını öğretmeninle belirle; ikiniz birlikte ritmi tamamlarsınız.',
+        tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'}
+    ]
+  },
+  '7c2': {
+    cls:'7C', no:2, song:'Yaşanacaksa', artist:'', lyricsUrl:'https://www.google.com/search?q=ya%C5%9Fanacaksa+s%C3%B6zleri&safe=active',
+    form: YASANACAKSA_FORM, loop: LOOP,
+    instruments: [
+      {id:'gitar', name:'Gitar', count:3, kind:'gitar',
+        lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Şarkı baştan sona aynı dört akorla döner.',
+        tip:'Parmağını hiç kaldırmadan teller üzerinde kaydır: 7. perdeden 2. perdeye, sonra boş tellere. Sadece iki kalın teli çal.'},
+      {id:'bateri', name:'Bateri', count:1, kind:'bateri',
+        lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
+        tip:'Bir bölümden diğerine geçmeden önceki son ölçüde kısa bir dolgu (fill) yap, yeni bölüme zil ile gir.'},
+      {id:'vokal', name:'Vokal', count:2, kind:'vokal',
+        lead:'Sözleri aşağıdaki düğmeden aç. Şarkının bölümleri de sırasıyla burada.',
+        tip:'Girmeden önce gitar ya da piyanonun ilk sesini dinle, sesini ona göre bul.'},
+      {id:'piyano', name:'Piyano', count:3, kind:'piyano',
+        lead:'Sağ elinle üçlü akoru, sol elinle akorun kök sesini çal. Şarkı baştan sona aynı dört akorla döner.',
+        tip:'Am’den Dm’e geçerken La sesi iki akorda da var. O parmağı yerinde bırak, diğerlerini kaydır.'},
+      {id:'perkusyon', name:'Perküsyon', count:2, kind:'perkusyon',
+        lead:'İki perküsyon partisi var. Hangisini çalacağını öğretmeninle belirle; ikiniz birlikte ritmi tamamlarsınız.',
+        tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'}
+    ]
+  }
+};
+
+const app = document.getElementById('app');
+Object.keys(SPLITS).forEach(k=>{ SPLITS[k].id=k; });
+let wakeLock = null;
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function splitLabel(id){const s=SPLITS[id]; const cls=id.slice(0,2).toUpperCase(); return `${cls} · ${id.slice(2)}. Split`}
+
+function homeView(){
+  const cards = CLASSES.map(c=>{
+    const btns=[1,2].map(n=>{
+      const id=c.toLowerCase()+n, s=SPLITS[id];
+      if(s) return `<a class="split-btn" href="#${id}">${n}. Split<small>${esc(s.song)}</small></a>`;
+      return `<span class="split-btn is-off" aria-disabled="true">${n}. Split<small>Hazırlanıyor</small></span>`;
+    }).join('');
+    return `<section class="class-card"><h2>${c}</h2><div class="split-list">${btns}</div></section>`;
+  }).join('');
+  return `<main class="wrap">
+    <header class="home-head">
+      <div class="eyebrow">MÜZİK STÜDYOSU</div>
+      <h1>Grubunu seç</h1>
+      <p class="muted">Şubeni ve splitini seç, sonra kendi enstrümanına dokun.</p>
+    </header>
+    <div class="class-grid">${cards}</div>
+  </main>`;
+}
+
+function splitView(id){
+  const s=SPLITS[id];
+  const tiles=s.instruments.map(i=>`<a class="inst-tile" href="#${id}-${i.id}" aria-label="${esc(i.name)} partisini aç">
+      <span class="inst-art" aria-hidden="true">${ICONS[i.kind]}</span>
+      <span class="inst-meta"><span class="inst-name">${esc(i.name)}</span><span class="inst-count">${i.count} kişi</span></span>
+    </a>`).join('');
+  return `<main class="wrap">
+    <a class="back" href="#">← Gruplar</a>
+    <section class="stage">
+      <div class="stage-text">
+        <span class="badge">${splitLabel(id)}</span>
+        <h1 class="song">${esc(s.song)}</h1>
+        ${s.artist?`<p class="artist">${esc(s.artist)}</p>`:''}
+      </div>
+      <div class="scene" aria-hidden="true">${SCENE}</div>
+    </section>
+    <section class="pick">
+      <h2>Enstrümanına dokun</h2>
+      <div class="inst-grid" style="--n:${s.instruments.length}">${tiles}</div>
+    </section>
+  </main>`;
+}
+
+function powerSVG(f){
+  const nut=44, fw=28, sy=i=>20+i*14, F='font-family="Figtree,sans-serif"';
+  const labels=['Re','La','Re','Sol','Si','Mi'];
+  let o=`<svg class="neck-svg" viewBox="0 0 412 128" role="img" aria-label="En kalın iki tel, ${fretLabel(f)}">`;
+  o+=`<rect x="${nut}" y="${sy(0)-6}" width="${12*fw}" height="${sy(5)-sy(0)+12}" rx="4" fill="#232850"/>`;
+  [3,5,7,9].forEach(k=>{o+=`<circle cx="${nut+(k-0.5)*fw}" cy="${(sy(2)+sy(3))/2}" r="4" fill="#343B73"/>`});
+  o+=`<circle cx="${nut+11.5*fw}" cy="${sy(1)+7}" r="4" fill="#343B73"/><circle cx="${nut+11.5*fw}" cy="${sy(3)+7}" r="4" fill="#343B73"/>`;
+  for(let k=1;k<=12;k++) o+=`<line x1="${nut+k*fw}" x2="${nut+k*fw}" y1="${sy(0)-6}" y2="${sy(5)+6}" stroke="#4A5070" stroke-width="2"/>`;
+  o+=`<rect x="${nut-4}" y="${sy(0)-6}" width="5" height="${sy(5)-sy(0)+12}" fill="#F3F5F9"/>`;
+  for(let i=0;i<6;i++){
+    const play=i<2;
+    o+=`<line x1="${nut}" x2="${nut+12*fw}" y1="${sy(i)}" y2="${sy(i)}" stroke="${play?'#F3F5F9':'#6B739A'}" stroke-width="${(3.2-i*0.4).toFixed(1)}"/>`;
+    o+=`<text x="12" y="${sy(i)+4}" text-anchor="middle" font-size="11" font-weight="${play?700:400}" fill="${play?'#F5B93A':'#6B739A'}" ${F}>${labels[i]}</text>`;
+  }
+  if(f===0){
+    [0,1].forEach(i=>{o+=`<circle cx="30" cy="${sy(i)}" r="6" fill="#12152B" stroke="#F5B93A" stroke-width="2.5"/>`});
+  } else {
+    const cx=nut+(f-0.5)*fw;
+    o+=`<rect x="${cx-10}" y="${sy(0)-10}" width="20" height="${sy(1)-sy(0)+20}" rx="10" fill="#F5B93A"/>`;
+    o+=`<text x="${cx}" y="${(sy(0)+sy(1))/2+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#1B1F3B" ${F}>1</text>`;
+  }
+  for(let k=1;k<=12;k++){
+    const on=k===f;
+    o+=`<text x="${nut+(k-0.5)*fw}" y="122" text-anchor="middle" font-size="${on?14:11}" font-weight="${on?800:500}" fill="${on?'#F5B93A':'#AEB6D3'}" ${F}>${k}</text>`;
+  }
+  return o+`</svg>`;
+}
+
+function pianoSVG(name){
+  FLATS=useFlats(name);
+  const on=new Set(triad(name)), W=24, H=112, F='font-family="Figtree,sans-serif"';
+  const whiteSemi=[0,2,4,5,7,9,11], blackAfter=[[0,1],[1,3],[3,6],[4,8],[5,10]];
+  let o=`<svg class="piano-svg" viewBox="0 0 ${14*W+2} ${H+2}" role="img" aria-label="${name} akoru, piyano tuşları: ${triad(name).map(solf).join(', ')}">`;
+  for(let k=0;k<14;k++){
+    const semi=Math.floor(k/7)*12+whiteSemi[k%7], hit=on.has(semi);
+    o+=`<rect x="${1+k*W}" y="1" width="${W}" height="${H}" rx="3" fill="${hit?'#F5B93A':'#F3F5F9'}" stroke="#12152B" stroke-width="1.5"/>`;
+    if(hit) o+=`<text x="${1+k*W+W/2}" y="${H-10}" text-anchor="middle" font-size="11" font-weight="700" fill="#1B1F3B" ${F}>${solf(semi)}</text>`;
+  }
+  for(let oc=0;oc<2;oc++) blackAfter.forEach(([idx,s])=>{
+    const semi=oc*12+s, hit=on.has(semi), x=1+(oc*7+idx+1)*W-8;
+    o+=`<rect x="${x}" y="1" width="16" height="68" rx="2" fill="${hit?'#F5B93A':'#1B1F3B'}" stroke="#12152B" stroke-width="1"/>`;
+    if(hit) o+=`<text x="${x+8}" y="60" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1B1F3B" ${F}>${solf(semi)}</text>`;
+  });
+  return o+`</svg>`;
+}
+
+function beatTable(rows){
+  const counts=['1','&','2','&','3','&','4','&'];
+  return `<div class="beat-wrap"><table class="beat">
+    <thead><tr><th scope="col"><span class="muted">Vuruş</span></th>${counts.map(c=>`<th scope="col">${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr><th scope="row">${esc(r.name)}</th>${r.hits.map(h=>`<td><span class="${h?'hit':'rest'}" role="img" aria-label="${h?'vur':'boş'}"></span></td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function chipHTML(tok,kind,pos){
+  const c=tok.split(':')[0];
+  if(kind!=='gitar') return `<span class="chip" data-pos="${pos}">${c}</span>`;
+  const f=dropDFret(c);
+  return `<span class="chip chip-fret" data-pos="${pos}" aria-label="${fretLabel(f)}">${f}</span>`;
+}
+function formHTML(form,kind){
+  return `<ol class="form">${form.map((sec,si)=>`<li class="form-row" data-si="${si}">
+      <div class="form-name">${esc(sec.name)}${sec.rep?` <span class="rep">×${sec.rep}</span>`:''}</div>
+      ${kind==='vokal'||NOTE_ONLY.has(kind)?'':`<div class="form-loops">${sec.loops.map((l,ri)=>`<div class="loop">${l.map((c,ci)=>chipHTML(c,kind,`${si}-${ri}-${ci}`)).join('')}</div>`).join('')}</div>`}
+    </li>`).join('')}</ol>`;
+}
+
+/* ---------- Çalıcı: tempo ile yanan akor + 4-3-2-1 sayaç ----------
+   Zaman cihaz saatinden hesaplanır; aynı BPM ve aynı başlangıç anı = tüm iPad'ler aynı yerde. */
+const COUNT_IN = 4;
+const NOTE_ONLY = new Set(['keman','flut']);
+const P = {on:false, t0:0, bpm:80, seq:[], cum:[], kind:'', lastBeat:null, raf:0, click:false, ac:null, sid:''};
+
+function buildSeq(s){
+  const sh=activeSheet(s);
+  if(sh){
+    const q=[];
+    sh.forEach((sec,si)=>sec.lines.forEach((ln,ri)=>ln.chords.forEach((c,ci)=>q.push({si,ri,ci,c:c.c,beats:c.beats,sec:sec.name||'Şarkı'}))));
+    if(q.length) return q;
+  }
+  const seq=[];
+  s.form.forEach((sec,si)=>{
+    for(let r=0;r<(sec.rep||1);r++) sec.loops.forEach((row,ri)=>row.forEach((tok,ci)=>{
+      const [c,b]=tok.split(':');
+      seq.push({si,ri,ci,c,beats:(+b)||s.beats||4,sec:sec.name});
+    }));
+  });
+  return seq;
+}
+function itemView(it,kind){
+  if(kind==='gitar'){ const f=dropDFret(it.c); return {big:String(f), sub:f===0?'boş teller':'perde', next:fretLabel(f)}; }
+  if(kind==='vokal'||NOTE_ONLY.has(kind)) return {big:it.sec, sub:'', next:it.sec};
+  return {big:it.c, sub:'', next:it.c};
+}
+function playerHTML(s,i){
+  const v=i.kind==='vokal'||NOTE_ONLY.has(i.kind);
+  return `<section class="player${activeSheet(s)?' compact':''}" id="player" aria-label="Çalıcı">
+    <div class="pl-stage">
+      <div class="pl-now">
+        <span class="pl-sec" id="pl-sec">${v?'BÖLÜM':'HAZIR'}</span>
+        <span class="pl-big${v?' words':''}" id="pl-big" aria-live="off">–</span>
+        <span class="pl-sub" id="pl-sub"></span>
+      </div>
+      <div class="pl-count" aria-hidden="true">
+        <span class="pl-num" id="pl-num">4</span>
+        <div class="pl-dots" id="pl-dots"></div>
+      </div>
+      <div class="strip" id="strip" aria-hidden="true"><div class="strip-track" id="strip-track"></div><div class="strip-head"></div></div>
+      <span class="sr-only" id="pl-nextbox">Sonra: <b id="pl-next">–</b></span>
+    </div>
+    <div class="pl-controls">
+      <div class="bpm" role="group" aria-label="Tempo">
+        <button type="button" id="bpm-down" aria-label="Tempoyu azalt">−</button>
+        <output id="bpm-val" aria-live="polite">80</output><span>BPM</span>
+        <button type="button" id="bpm-up" aria-label="Tempoyu artır">+</button>
+      </div>
+      <button type="button" class="pl-btn primary" id="pl-play">▶ Başlat</button>
+      <button type="button" class="pl-btn" id="pl-sync">Birlikte başla</button>
+      <button type="button" class="pl-btn" id="pl-click" aria-pressed="false">Tık sesi: Kapalı</button>
+    </div>
+    <p class="pl-msg" id="pl-msg" role="status"></p>
+  </section>`;
+}
+const $=id=>document.getElementById(id);
+/* Vuruş şeridi: her vuruş bir kutu, 4 vuruşta bir ölçü çizgisi; şerit sağdan sola akar. */
+const LEAD=1, STRIP_CELLS=20;
+const RM=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stripLabel(it,kind,prev){
+  if(kind==='gitar') return String(dropDFret(it.c));
+  if(kind==='vokal'||NOTE_ONLY.has(kind)) return (!prev||prev.si!==it.si) ? it.sec : '';
+  return it.c;
+}
+function sizeStrip(){ const st=$('strip'); if(!st) return; P.cw=Math.max(40,Math.floor(st.clientWidth/STRIP_CELLS)); st.style.setProperty('--cw',P.cw+'px'); }
+function placeStrip(x){ const tr=$('strip-track'); if(tr) tr.style.transform=`translate3d(${(-(Math.max(0,x)-LEAD)*P.cw).toFixed(1)}px,0,0)`; }
+function buildStrip(){
+  const tr=$('strip-track'); if(!tr) return;
+  const words=P.kind==='vokal'||NOTE_ONLY.has(P.kind);
+  let h='', n=0, prev=null;
+  for(let k=0;k<COUNT_IN;k++) h+=`<div class="cell ci${k===0?' bar':''}"><span class="lab">${COUNT_IN-k}</span></div>`;
+  P.seq.forEach(it=>{
+    const lab=stripLabel(it,P.kind,prev);
+    for(let b=0;b<it.beats;b++){ h+=`<div class="cell${n%4===0?' bar':''}${b===0?' start':''}">${b===0&&lab?`<span class="lab${words?' w':''}">${esc(lab)}</span>`:''}</div>`; n++; }
+    prev=it;
+  });
+  h+=`<div class="cell bar end"><span class="lab w">Son</span></div>`;
+  tr.innerHTML=h; P.cells=tr.children; P.curCell=-1; sizeStrip(); placeStrip(0);
+}
+function markCell(b){
+  if(!P.cells) return;
+  const c=P.cells[P.curCell]; if(c){ c.classList.remove('cur'); c.classList.add('past'); }
+  const n=P.cells[b]; if(n){ void n.offsetWidth; n.classList.add('cur'); }
+  P.curCell=b; placeStrip(b);
+}
+window.addEventListener('resize',()=>{ if($('strip')){ sizeStrip(); if(!P.on) placeStrip(0); } });
+function setDots(total,left){
+  const box=$('pl-dots'); if(!box) return;
+  if(box.childElementCount!==total) box.innerHTML='<span class="pl-dot"></span>'.repeat(total);
+  [...box.children].forEach((d,k)=>d.classList.toggle('on',k<left));
+}
+function markNow(it){
+  document.querySelectorAll('.chip.now,.form-row.now,.lyr-sec.now,.lyr-line.now').forEach(e=>e.classList.remove('now'));
+  if(!it){ P.lastLine=null; return; }
+  const row=document.querySelector(`.form-row[data-si="${it.si}"],.lyr-sec[data-si="${it.si}"]`); row&&row.classList.add('now');
+  const line=document.querySelector(`.lyr-line[data-line="${it.si}-${it.ri}"]`);
+  if(line){ line.classList.add('now'); if(P.lastLine!==line){ P.lastLine=line; line.scrollIntoView({block:'center',behavior:RM?'auto':'smooth'}); } }
+  const chip=document.querySelector(`.chip[data-pos="${it.si}-${it.ri}-${it.ci}"]`); chip&&chip.classList.add('now');
+}
+function idleMsg(){ return `Tempo ${P.bpm} BPM. Tek başına çalışmak için Başlat'a bas. Sınıfça çalarken öğretmen “şimdi” deyince herkes Birlikte başla'ya bassın.`; }
+function resetDisplay(){
+  buildStrip();
+  const first=P.seq[0];
+  const sv=P.kind==='vokal'||NOTE_ONLY.has(P.kind);
+  $('pl-big').textContent= sv ? first.sec : '–';
+  $('pl-sub').textContent='';
+  $('pl-sec').textContent= sv ? 'BÖLÜM' : 'HAZIR';
+  $('pl-num').textContent=String(COUNT_IN);
+  $('pl-next').textContent=itemView(first,P.kind).next;
+  $('pl-nextbox').classList.remove('soon');
+  setDots(COUNT_IN,COUNT_IN);
+  $('player').classList.remove('lit');
+  markNow(null);
+}
+function clickAt(t,accent){
+  if(!P.click||!P.ac) return;
+  try{
+    const o=P.ac.createOscillator(), g=P.ac.createGain();
+    o.frequency.value=accent?1800:880; g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(accent?0.7:0.3,t+0.002); g.gain.exponentialRampToValueAtTime(0.0001,t+(accent?0.08:0.045));
+    o.connect(g).connect(P.ac.destination); o.start(t); o.stop(t+0.09);
+  }catch(e){}
+}
+function flash(){ const p=$('player'); if(!p) return; p.classList.remove('beat'); void p.offsetWidth; p.classList.add('beat'); }
+function onBeat(b){
+  markCell(b);
+  if(b<COUNT_IN){
+    const left=COUNT_IN-b;
+    $('pl-sec').textContent='SAYIM'; $('pl-big').textContent= (P.kind==='vokal'||NOTE_ONLY.has(P.kind)) ? P.seq[0].sec : 'Hazır';
+    $('pl-sub').textContent=''; $('pl-num').textContent=String(left); setDots(COUNT_IN,left);
+    $('pl-next').textContent=itemView(P.seq[0],P.kind).next; $('pl-nextbox').classList.toggle('soon',left===1);
+    $('player').classList.remove('lit'); flash(); return;
+  }
+  const x=b-COUNT_IN; let k=0;
+  while(k<P.seq.length && P.cum[k+1]<=x) k++;
+  if(k>=P.seq.length){ finish(); return; }
+  const it=P.seq[k], into=x-P.cum[k], left=it.beats-into, v=itemView(it,P.kind), nx=P.seq[k+1];
+  $('pl-sec').textContent=it.sec.toLocaleUpperCase('tr');
+  $('pl-big').textContent=v.big; $('pl-sub').textContent=v.sub;
+  $('pl-num').textContent=String(left); setDots(it.beats,left);
+  $('pl-next').textContent= nx ? itemView(nx,P.kind).next : 'Bitiş';
+  $('pl-nextbox').classList.toggle('soon',left===1);
+  $('player').classList.add('lit'); markNow(it); flash();
+}
+/* Tık sesleri ses saatine önceden planlanır: ekran yenilemesinden bağımsız, vuruşla tam aynı anda. */
+function scheduleClicks(now,bms){
+  if(!P.click||!P.ac) return;
+  if(P.nextClick==null) P.nextClick=Math.max(0,Math.ceil((now-P.t0)/bms));
+  const lat=(P.ac.outputLatency||P.ac.baseLatency||0);
+  while(P.nextClick<P.total){
+    const tb=P.t0+P.nextClick*bms;
+    if(tb>now+150) break;
+    if(tb>=now-15){
+      const k=P.nextClick, accent = P.starts.has(k);
+      clickAt(Math.max(P.ac.currentTime, P.ac.currentTime+(tb-now)/1000-lat), accent);
+    }
+    P.nextClick++;
+  }
+}
+function loop(){
+  if(!P.on) return;
+  const now=Date.now(), bms=60000/P.bpm;
+  if(now<P.t0){
+    placeStrip(0); scheduleClicks(now,bms);
+    const sec=Math.ceil((P.t0-now)/1000);
+    const m=$('pl-msg'); if(m) m.textContent=`Birlikte başlıyoruz: ${sec} sn`;
+    P.raf=requestAnimationFrame(loop); return;
+  }
+  const xf=(now-P.t0)/bms, b=Math.floor(xf);
+  scheduleClicks(now,bms);
+  if(b!==P.lastBeat){ P.lastBeat=b; const m=$('pl-msg'); if(m && b===0) m.textContent=`Çalıyor · ${P.bpm} BPM`; onBeat(b); }
+  if(P.on) P.raf=requestAnimationFrame(loop);
+}
+function ensureAudio(){
+  try{ if(!P.ac){ const AC=window.AudioContext||window.webkitAudioContext; if(AC) P.ac=new AC(); } if(P.ac&&P.ac.state==='suspended') P.ac.resume(); }catch(e){}
+}
+function setPlaying(on){
+  P.on=on;
+  const play=$('pl-play'); if(play) play.textContent= on ? '■ Durdur' : '▶ Başlat';
+  ['bpm-down','bpm-up'].forEach(id=>{const b=$(id); if(b) b.disabled=on;});
+  const sync=$('pl-sync'); if(sync) sync.disabled=on;
+}
+function start(t0){
+  ensureAudio(); P.t0=t0; P.lastBeat=null; P.nextClick=null; setPlaying(true); keepAwake(true);
+  cancelAnimationFrame(P.raf); P.raf=requestAnimationFrame(loop);
+}
+function stopPlayer(){
+  cancelAnimationFrame(P.raf);
+  if(!P.on) return;
+  setPlaying(false);
+  if($('player')){ resetDisplay(); $('pl-msg').textContent=idleMsg(); }
+}
+function finish(){
+  cancelAnimationFrame(P.raf); setPlaying(false); markNow(null);
+  $('player').classList.remove('lit');
+  $('pl-sec').textContent='SON'; $('pl-big').textContent='Bitti'; $('pl-sub').textContent='';
+  $('pl-num').textContent='0'; setDots(4,0); $('pl-next').textContent='–';
+  $('pl-msg').textContent='Şarkı bitti. Tekrar çalmak için Başlat\'a bas.';
+}
+function initPlayer(sid,instId){
+  const s=SPLITS[sid], i=s.instruments.find(x=>x.id===instId);
+  if(!i||!$('player')) return;
+  if(P.sid!==sid){
+    let saved=null; try{ saved=+localStorage.getItem('bpm-'+sid); }catch(e){}
+    P.bpm=(saved>=40&&saved<=200)?saved:(s.bpm||80); P.sid=sid;
+  }
+  P.kind=i.kind; P.seq=buildSeq(s); P.cum=[0];
+  P.seq.forEach(it=>P.cum.push(P.cum[P.cum.length-1]+it.beats));
+  P.total=COUNT_IN+P.cum[P.cum.length-1];
+  P.starts=new Set(P.cum.slice(0,-1).map(c=>COUNT_IN+c)); /* akor değişen vuruşlar: tiz tık */
+  $('bpm-val').textContent=String(P.bpm);
+  $('pl-click').textContent=`Tık sesi: ${P.click?'Açık':'Kapalı'}`; $('pl-click').setAttribute('aria-pressed',String(P.click));
+  resetDisplay(); $('pl-msg').textContent=idleMsg();
+  const bump=d=>{
+    P.bpm=Math.max(40,Math.min(200,P.bpm+d)); $('bpm-val').textContent=String(P.bpm); $('pl-msg').textContent=idleMsg();
+    try{ localStorage.setItem('bpm-'+sid,String(P.bpm)); }catch(e){}
+  };
+  $('bpm-down').onclick=()=>bump(-5);
+  $('bpm-up').onclick=()=>bump(5);
+  $('pl-play').onclick=()=>{ if(P.on) stopPlayer(); else start(Date.now()+150); };
+  $('pl-sync').onclick=()=>{ start(Math.ceil((Date.now()+2000)/10000)*10000); };
+  $('pl-click').onclick=()=>{ P.click=!P.click; P.nextClick=null; if(P.click) ensureAudio(); $('pl-click').textContent=`Tık sesi: ${P.click?'Açık':'Kapalı'}`; $('pl-click').setAttribute('aria-pressed',String(P.click)); };
+}
+
+function lyricsHref(s){
+  if(s.lyricsUrl) return s.lyricsUrl;
+  const q=`${s.song} ${s.artist||''} şarkı sözleri`.replace(/\s+/g,' ').trim();
+  return 'https://www.google.com/search?q='+encodeURIComponent(q)+'&safe=active';
+}
+function partBody(s,i){
+  const uniq=chordsOf(s);
+  if(i.kind==='gitar') return `<section class="block">
+      <div class="block-head"><h3>Perdeler</h3><span class="tag">Drop D</span></div>
+      <div class="chord-row neck-row">${[...new Set(uniq.map(dropDFret))].sort((x,y)=>x-y).map(f=>`<div class="chord-card"><div class="fret-head"><h4 class="fret-num">${f}</h4><span class="fret-word">${f===0?'boş teller':'perde'}</span></div><div class="neck-wrap">${powerSVG(f)}</div></div>`).join('')}</div>
+      <p class="note">Akort: Drop D. Teller kalından inceye Re – La – Re – Sol – Si – Mi. Sarı işaret, işaret parmağınla (1) iki kalın teli birlikte bastığın yer. Diğer dört teli çalma.</p>
+    </section>
+    <section class="block">
+      <div class="block-head"><h3>Ritim</h3><span class="tag">Öneri</span></div>
+      <div class="strum" aria-label="aşağı, aşağı, aşağı, aşağı"><span>↓</span><span>↓</span><span>↓</span><span>↓</span></div>
+      <p class="note">Her vuruşta aşağı doğru vur. Öğretmeninin gösterdiği ritim önceliklidir.</p>
+    </section>`;
+  if(i.kind==='piyano') return `<section class="block">
+      <div class="block-head"><h3>Akorlar</h3></div>
+      <div class="chord-row piano-row">${uniq.map(c=>`<div class="chord-card"><h4>${c}</h4>${pianoSVG(c)}<p class="sub">Sağ el: ${chordNotes(c).join(' – ')} · Sol el: ${chordNotes(c)[0]}</p></div>`).join('')}</div>
+    </section>`;
+  if(i.kind==='bateri') return `<section class="block">
+      <div class="block-head"><h3>Temel ritim</h3><span class="tag">Öneri</span></div>
+      ${beatTable([
+        {name:'Hi-hat', hits:[1,1,1,1,1,1,1,1]},
+        {name:'Trampet', hits:[0,0,1,0,0,0,1,0]},
+        {name:'Bas davul', hits:[1,0,0,0,1,0,0,0]}
+      ])}
+      <p class="note">“1 & 2 & 3 & 4 &” diye sayarak çal. Sarı daireler vuracağın yerler. Öğretmeninin gösterdiği ritim önceliklidir.</p>
+    </section>`;
+  if(i.kind==='perkusyon') return `<section class="block">
+      <div class="block-head"><h3>İki parti</h3><span class="tag">Öneri</span></div>
+      ${beatTable([
+        {name:'1 · Shaker / marakas', hits:[1,1,1,1,1,1,1,1]},
+        {name:'2 · Konga', hits:[0,0,1,0,0,0,1,1]}
+      ])}
+      <p class="note">“1 & 2 & 3 & 4 &” diye sayarak çal. Sarı daireler vuracağın yerler. Öğretmeninin gösterdiği ritim önceliklidir.</p>
+    </section>`;
+  if(i.kind==='vokal') return `<section class="block">
+      <div class="block-head"><h3>Sözler</h3></div>
+      <a class="lyrics-btn" href="${esc(lyricsHref(s))}" target="_blank" rel="noopener">Sözleri aç <span aria-hidden="true">↗</span></a>
+      <p class="note">Sözler yeni sekmede açılır. Bitince bu sekmeye geri dön; bölümlerin sırası aşağıda.</p>
+    </section>`;
+  if(NOTE_ONLY.has(i.kind)) return `<section class="block">
+      <div class="block-head"><h3>Nota</h3></div>
+      <p class="note">Bu partinin notası hazırlanıyor. Şimdilik öğretmeninin verdiği notadan çal; çalıcı sana hangi bölümde olduğunu gösterir.</p>
+    </section>`;
+  return '';
+}
+
+function partView(id,instId){
+  const s=SPLITS[id], i=s.instruments.find(x=>x.id===instId);
+  if(!i) return '';
+  const isG=i.kind==='gitar';
+  const isLoop=!!s.loop, seq=isG && !isLoop ? [...new Set(chordsOf(s).map(dropDFret))].sort((x,y)=>x-y) : (s.loop||chordsOf(s));
+  const heroLbl=isG ? (isLoop?'Perde döngüsü':'Şarkıdaki perdeler') : (isLoop?'Akor döngüsü':'Şarkıdaki akorlar');
+  const loopLabel=isG ? seq.map(c=>fretLabel(typeof c==='number'?c:dropDFret(c))).join(', ') : seq.join(', ');
+  const loop=seq.map((c,k)=>{
+    const f=typeof c==='number'?c:dropDFret(c);
+    const inner=isG ? `<span class="big-chord">${f}</span><span class="fret-sub">${f===0?'boş teller':'perde'}</span>` : `<span class="big-chord">${c}</span>`;
+    return `${k&&isLoop?'<span class="arrow" aria-hidden="true">→</span>':''}<span class="loop-item">${inner}</span>`;
+  }).join('');
+  return `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="part-title">
+    <div class="sheet-bar"><div class="sheet-bar-in">
+      <a class="back" href="#${id}">← Enstrümanlar</a>
+      <span class="sheet-where">${splitLabel(id)} · ${esc(s.song)}</span>
+    </div></div>
+    <div class="wrap">
+      <header class="part-head">
+        <span class="inst-art" aria-hidden="true">${ICONS[i.kind]}</span>
+        <div class="part-title"><h2 id="part-title" tabindex="-1">${esc(i.name)}</h2><p>${esc(i.lead)}</p></div>
+      </header>
+      ${playerHTML(s,i)}
+      ${i.kind==='vokal'||NOTE_ONLY.has(i.kind)?'':`<div class="loop-hero${isLoop?'':' spread'}" aria-label="${heroLbl}: ${loopLabel}"><span class="lbl">${heroLbl.toLocaleUpperCase('tr')}</span>${loop}</div>`}
+      ${partBody(s,i)}
+      <section class="block">
+        <div class="block-head"><h3>${activeSheet(s)?(i.kind==='vokal'||NOTE_ONLY.has(i.kind)?'Sözler':'Sözler ve akorlar'):'Şarkının akışı'}</h3></div>
+        ${activeSheet(s)?sheetHTML(activeSheet(s),i.kind):formHTML(s.form,i.kind)}
+      </section>
+      <div class="tip"><b>İpucu</b><span>${esc(i.tip)}</span></div>
+    </div>
+  </div>`;
+}
+
+async function keepAwake(on){
+  try{
+    if(on && 'wakeLock' in navigator && !wakeLock){ wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{wakeLock=null}); }
+    if(!on && wakeLock){ await wakeLock.release(); wakeLock=null; }
+  }catch(e){ wakeLock=null; }
+}
+
+function render(){
+  stopPlayer();
+  const h=location.hash.replace('#','');
+  const [id,inst]=h.split('-');
+  if(id && SPLITS[id]){
+    loadSheet(id);
+    app.innerHTML=splitView(id)+(inst?partView(id,inst):'');
+    const open=!!(inst && app.querySelector('.sheet'));
+    document.body.classList.toggle('locked',open);
+    keepAwake(open);
+    if(open){ initPlayer(id,inst); const t=document.getElementById('part-title'); t&&t.focus({preventScroll:true}); }
+    else window.scrollTo(0,0);
+  } else {
+    app.innerHTML=homeView();
+    document.body.classList.remove('locked');
+    keepAwake(false);
+    window.scrollTo(0,0);
+  }
+  const s=SPLITS[id];
+  document.title = s ? `${s.song} · ${splitLabel(id)}` : 'Stüdyo Notaları';
+}
+window.addEventListener('hashchange',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){const [id,inst]=location.hash.replace('#','').split('-'); if(inst) location.hash=id;}
+});
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && document.querySelector('.sheet')) keepAwake(true); });
+render();
+</script>
+
+</body>
+</html>
