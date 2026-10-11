@@ -70,11 +70,11 @@ Beautiful faces, no cares in this world
 Where a girl loves a boy, and a boy loves a girl
 
 [Instrumental]
-Am  G  Am
+Am  G  Am 4
 F Am C G
 
 [Verse]
-Am             G            Am
+Am             G            Am 4
 Last night I dreamt of San Pedro
 F  Am               C             G
 It all seems like yesterday, not far away
@@ -114,4 +114,4 @@ Ring through my ears and sting my eyes
      Em           Am    F  G
 Your Spanish lullaby
 
-Am
+Am 4
