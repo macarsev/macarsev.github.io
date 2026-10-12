@@ -566,7 +566,7 @@ const SPLITS = {
     instruments: [
       {id:'gitar', name:'Gitar', count:3, kind:'gitar',
         lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Perdeleri öğren, sonra aşağıdaki akıştan nerede olduğunu takip et.',
-        tip:'Akorlar çoğunlukla 2 vuruş sürer, sayaç 2’den başlar. Hızlı geçişler için parmağını kaldırmadan kaydır.'},
+        tip:'Akorlar çoğunlukla 2 vuruş sürer, sayaç 1-2 diye sayar. Hızlı geçişler için parmağını kaldırmadan kaydır.'},
       {id:'bateri', name:'Bateri', count:1, kind:'bateri',
         lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
         tip:'Köprüden enstrümantale geçerken kısa bir dolgu (fill) yap, yeni bölüme zil ile gir.'},
@@ -603,10 +603,10 @@ const SPLITS = {
         tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'},
       {id:'keman', name:'Keman', count:1, kind:'keman',
         lead:'Notan öğretmenin tarafından hazırlanıyor. Çalıcı sana şarkının hangi bölümünde olduğunu gösterir.',
-        tip:'Bölüm değişimlerini sayaçtan takip et; 1’e gelince yeni bölüme hazırlan.'},
+        tip:'Bölüm değişimlerini sayaçtan takip et; son vuruşta yeni bölüme hazırlan.'},
       {id:'flut', name:'Flüt', count:1, kind:'flut',
         lead:'Notan öğretmenin tarafından hazırlanıyor. Çalıcı sana şarkının hangi bölümünde olduğunu gösterir.',
-        tip:'Bölüm değişimlerini sayaçtan takip et; 1’e gelince yeni bölüme hazırlan.'}
+        tip:'Bölüm değişimlerini sayaçtan takip et; son vuruşta yeni bölüme hazırlan.'}
     ]
   },
   '7c1': {
@@ -840,7 +840,7 @@ function buildStrip(){
   const tr=$('strip-track'); if(!tr) return;
   const words=P.kind==='vokal'||NOTE_ONLY.has(P.kind);
   let h='', n=0, prev=null;
-  for(let k=0;k<COUNT_IN;k++) h+=`<div class="cell ci${k===0?' bar':''}"><span class="lab">${COUNT_IN-k}</span></div>`;
+  for(let k=0;k<COUNT_IN;k++) h+=`<div class="cell ci${k===0?' bar':''}"><span class="lab">${k+1}</span></div>`;
   P.seq.forEach(it=>{
     const lab=stripLabel(it,P.kind,prev);
     for(let b=0;b<it.beats;b++){ h+=`<div class="cell${n%4===0?' bar':''}${b===0?' start':''}">${b===0&&lab?`<span class="lab${words?' w':''}">${esc(lab)}</span>`:''}</div>`; n++; }
@@ -886,10 +886,10 @@ function resetDisplay(){
   $('pl-big').textContent= sv ? first.sec : '–';
   $('pl-sub').textContent='';
   $('pl-sec').textContent= sv ? 'BÖLÜM' : 'HAZIR';
-  $('pl-num').textContent=String(COUNT_IN);
+  $('pl-num').textContent='1';
   $('pl-next').textContent=itemView(first,P.kind).next;
   $('pl-nextbox').classList.remove('soon');
-  setDots(COUNT_IN,COUNT_IN);
+  setDots(COUNT_IN,0);
   $('player').classList.remove('lit');
   markNow(null);
 }
@@ -906,21 +906,21 @@ function flash(){ const p=$('player'); if(!p) return; p.classList.remove('beat')
 function onBeat(b){
   markCell(b);
   if(b<COUNT_IN){
-    const left=COUNT_IN-b;
+    const cnt=b+1;
     $('pl-sec').textContent='SAYIM'; $('pl-big').textContent= (P.kind==='vokal'||NOTE_ONLY.has(P.kind)) ? P.seq[0].sec : 'Hazır';
-    $('pl-sub').textContent=''; $('pl-num').textContent=String(left); setDots(COUNT_IN,left);
-    $('pl-next').textContent=itemView(P.seq[0],P.kind).next; $('pl-nextbox').classList.toggle('soon',left===1);
+    $('pl-sub').textContent=''; $('pl-num').textContent=String(cnt); setDots(COUNT_IN,cnt);
+    $('pl-next').textContent=itemView(P.seq[0],P.kind).next; $('pl-nextbox').classList.toggle('soon',cnt===COUNT_IN);
     $('player').classList.remove('lit'); flash(); return;
   }
   const x=b-COUNT_IN; let k=0;
   while(k<P.seq.length && P.cum[k+1]<=x) k++;
   if(k>=P.seq.length){ finish(); return; }
-  const it=P.seq[k], into=x-P.cum[k], left=it.beats-into, v=itemView(it,P.kind), nx=P.seq[k+1];
+  const it=P.seq[k], into=x-P.cum[k], cnt=into+1, v=itemView(it,P.kind), nx=P.seq[k+1];
   $('pl-sec').textContent=it.sec.toLocaleUpperCase('tr');
   $('pl-big').textContent=v.big; $('pl-sub').textContent=v.sub;
-  $('pl-num').textContent=String(left); setDots(it.beats,left);
+  $('pl-num').textContent=String(cnt); setDots(it.beats,cnt);
   $('pl-next').textContent= nx ? itemView(nx,P.kind).next : 'Bitiş';
-  $('pl-nextbox').classList.toggle('soon',left===1);
+  $('pl-nextbox').classList.toggle('soon',cnt===it.beats);
   $('player').classList.add('lit'); markNow(it); flash();
 }
 /* Tık sesleri ses saatine önceden planlanır: ekran yenilemesinden bağımsız, vuruşla tam aynı anda. */
