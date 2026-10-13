@@ -558,7 +558,7 @@ const ISLA_FORM = [
   {name:'Bitiş', loops:[['Am:4']]}
 ];
 
-/* 7B · 1. Split — Kafama Göre (Athena), Re minör. Öğretmenin Word dosyasındaki perdeler: 0 = Dm, 5 = G, 10 = C; sayılar vuruş (yazılmayanlar 2). */
+/* 7B · 2. Split — Kafama Göre (Athena), Re minör. Öğretmenin Word dosyasındaki perdeler: 0 = Dm, 5 = G, 10 = C; sayılar vuruş (yazılmayanlar 2). */
 const KG_A = ['Dm','G','Dm','G'];
 const KG_B = ['Dm','G','C','Dm'];
 const KG_KITA = [KG_A, KG_B, KG_A, KG_B, ['C','Dm','C:8']];
@@ -569,9 +569,47 @@ const KAFAMA_FORM = [
   {name:'Bitiş', loops:[['Dm:4']]}
 ];
 
+/* 7B · 1. Split — Training Season (Dua Lipa), Mi minör. Öğretmenin akor sayfası; sayılar vuruş (yazılmayanlar 4).
+   Gitar perdeleri: Em = 2, Am = 7, B ve Bm = 9. */
+const TS_NAKARAT = [['Em'],['Em'],['Bm'],['Bm','Em'],['Em'],['Em'],['Bm'],['Bm','Em']];
+const TRAINING_FORM = [
+  {name:'Giriş', loops:[['Em','B']]},
+  {name:'Kıta 1', loops:[['Em','B'],['Em'],['B'],['Em'],['B'],['Em'],['B']]},
+  {name:'Ön nakarat', loops:[['Em','B','Em','B','Am'],['B']]},
+  {name:'Nakarat', loops:TS_NAKARAT},
+  {name:'Nakarat sonrası', loops:[['Em','B'],['Em'],['B'],['B','Em','B','Em','B','Am','B']]},
+  {name:'Kıta 2', loops:[['Em','B'],['Em'],['B'],['Em','B'],['Em'],['B']]},
+  {name:'Nakarat', loops:[['Em'],['Em'],['Bm'],['Bm','Em'],['Em'],['Em'],['Bm'],['B','Em']]},
+  {name:'Nakarat sonrası', loops:[['Em','B'],['Em'],['B'],['B','Em']]},
+  {name:'Köprü', loops:[['Em'],['B'],['Em'],['Em'],['B','Em','B','Em','B','Em','B'],['Em','B','Am'],['B']]},
+  {name:'Son nakarat', loops:[['Em'],['Em'],['B'],['B','Em'],['Em'],['Em'],['B'],['B','Em','B','Em','B','Em','B'],['Em','B','Em','B','Em','B'],['Am','B','Em']]}
+];
+
 const SPLITS = {
   '7b1': {
-    cls:'7B', no:1, song:'Kafama Göre', artist:'Athena', beats:2, bpm:80,
+    cls:'7B', no:1, song:'Training Season', artist:'Dua Lipa', beats:4, bpm:80,
+    lyricsUrl:'https://www.google.com/search?q=Training+Season+Dua+Lipa+lyrics&safe=active',
+    form: TRAINING_FORM,
+    instruments: [
+      {id:'gitar', name:'Gitar', count:3, kind:'gitar',
+        lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Perdeleri öğren, sonra aşağıdaki akıştan nerede olduğunu takip et.',
+        tip:'Bu şarkıda üç yer var: 2, 7 ve 9. perde. Şarkının çoğu 2. ve 9. perde arasında gider; parmağını kaldırmadan kaydır.'},
+      {id:'bateri', name:'Bateri', count:1, kind:'bateri',
+        lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
+        tip:'Ön nakarattan nakarata geçerken kısa bir dolgu (fill) yap, nakarata zil ile gir.'},
+      {id:'vokal', name:'Vokal', count:2, kind:'vokal',
+        lead:'Sözleri aşağıdaki düğmeden aç. Şarkının bölümleri de sırasıyla burada.',
+        tip:'Girmeden önce gitar ya da piyanonun ilk sesini dinle, sesini ona göre bul.'},
+      {id:'piyano', name:'Piyano', count:3, kind:'piyano',
+        lead:'Sağ elinle üçlü akoru, sol elinle akorun kök sesini çal. Akorlar çoğunlukla 4 vuruş sürer.',
+        tip:'B akorunda Re♯ ve Fa♯ siyah tuştur; Bm akorunda yalnızca Fa♯ siyah.'},
+      {id:'perkusyon', name:'Perküsyon', count:2, kind:'perkusyon',
+        lead:'İki perküsyon partisi var. Hangisini çalacağını öğretmeninle belirle; ikiniz birlikte ritmi tamamlarsınız.',
+        tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'}
+    ]
+  },
+  '7b2': {
+    cls:'7B', no:2, song:'Kafama Göre', artist:'Athena', beats:2, bpm:80,
     lyricsUrl:'https://www.google.com/search?q=Kafama+G%C3%B6re+Athena+s%C3%B6zleri&safe=active',
     form: KAFAMA_FORM,
     instruments: [
