@@ -558,7 +558,40 @@ const ISLA_FORM = [
   {name:'Bitiş', loops:[['Am:4']]}
 ];
 
+/* 7B · 1. Split — Kafama Göre (Athena), Re minör. Öğretmenin Word dosyasındaki perdeler: 0 = Dm, 5 = G, 10 = C; sayılar vuruş (yazılmayanlar 2). */
+const KG_A = ['Dm','G','Dm','G'];
+const KG_B = ['Dm','G','C','Dm'];
+const KG_KITA = [KG_A, KG_B, KG_A, KG_B, ['C','Dm','C:8']];
+const KAFAMA_FORM = [
+  {name:'Kıta 1', loops:KG_KITA},
+  {name:'Ara bölüm', rep:2, loops:[['Dm','G','Dm','G','Dm','G','C','Dm']]},
+  {name:'Kıta 2', loops:KG_KITA},
+  {name:'Bitiş', loops:[['Dm:4']]}
+];
+
 const SPLITS = {
+  '7b1': {
+    cls:'7B', no:1, song:'Kafama Göre', artist:'Athena', beats:2, bpm:80,
+    lyricsUrl:'https://www.google.com/search?q=Kafama+G%C3%B6re+Athena+s%C3%B6zleri&safe=active',
+    form: KAFAMA_FORM,
+    instruments: [
+      {id:'gitar', name:'Gitar', count:3, kind:'gitar',
+        lead:'Power akor çalıyorsun: en kalın iki teli tek parmağınla aynı perdede bas. Perdeleri öğren, sonra aşağıdaki akıştan nerede olduğunu takip et.',
+        tip:'Bu şarkıda üç yer var: boş teller, 5. perde ve 10. perde. Kıtanın sonundaki 10. perdede 8 vuruş bekle.'},
+      {id:'bateri', name:'Bateri', count:1, kind:'bateri',
+        lead:'Şarkı boyunca aynı temel ritmi çalarsın. Bölüm geçişlerini aşağıdaki akıştan takip et.',
+        tip:'Kıtadan ara bölüme geçmeden önce kısa bir dolgu (fill) yap, ara bölüme zil ile gir.'},
+      {id:'vokal', name:'Vokal', count:2, kind:'vokal',
+        lead:'Sözleri aşağıdaki düğmeden aç. Şarkının bölümleri de sırasıyla burada.',
+        tip:'Girmeden önce gitar ya da piyanonun ilk sesini dinle, sesini ona göre bul.'},
+      {id:'piyano', name:'Piyano', count:3, kind:'piyano',
+        lead:'Sağ elinle üçlü akoru, sol elinle akorun kök sesini çal. Şarkıda üç akor var: Dm, G ve C.',
+        tip:'Bu üç akorda hiç siyah tuş yok, hepsi beyaz tuşlarda. Kıtanın sonundaki C akorunu 8 vuruş tut.'},
+      {id:'perkusyon', name:'Perküsyon', count:2, kind:'perkusyon',
+        lead:'İki perküsyon partisi var. Hangisini çalacağını öğretmeninle belirle; ikiniz birlikte ritmi tamamlarsınız.',
+        tip:'Bateriyi dinle: trampetin vurduğu 2. ve 4. vuruşlar seninle aynı yere düşmeli.'}
+    ]
+  },
   '7a1': {
     cls:'7A', no:1, song:'La Isla Bonita', artist:'Madonna', beats:2, bpm:80,
     lyricsUrl:'https://www.google.com/search?q=La+Isla+Bonita+Madonna+lyrics&safe=active',
